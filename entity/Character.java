@@ -47,9 +47,5 @@ public abstract class Character extends Entity{
             this.y++;
     }
 
-    public void fallOne(){
-        this.y++;
-    }
-
     public abstract void respawn(int x, int y);
 }

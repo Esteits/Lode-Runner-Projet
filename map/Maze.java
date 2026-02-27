@@ -6,7 +6,8 @@ public class Maze{
     private int width;
     private int height;
     private int exit;
-    private Tiles[][] map; 
+    private Tiles[][] map;
+    private boolean escapeOpen;
 
     public Maze(int width, int height, int exit){
         this.width = width;
@@ -38,7 +39,14 @@ public class Maze{
     public void setExit(int a){
         this.exit=a;
     }
-    
+            
+    public boolean getCanEscape(){
+        return this.escapeOpen;
+    }
+    public void setCanEscape(boolean escape){
+        this.escapeOpen=escape;
+    }
+
     public void bord(){
         for (int x = 0 ; x < this.getWidth() ; x++){
             getTile(x, 0).setType(3);
