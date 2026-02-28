@@ -4,6 +4,7 @@ import entity.*;
 import entity.Character;
 import entity.Character.Direction;
 
+import java.io.*;
 import java.util.*;
 
 public class Game {
@@ -18,7 +19,28 @@ public class Game {
         this.ene = new ArrayList<>();
         this.tre = new ArrayList<>();
     }
+
+    public void addPlayer(Player p){
+        this.play.add(p);
+    }
+
+    public void addEnemy(Enemy e){
+        this.ene.add(e);
+    }
+
+    public void addTreasure(Treasure t){
+        this.tre.add(t);
+    }
     
+    public void sec(){
+        gravity();
+        playerEnemyCol();
+        playerTreasureCol();
+        decrementEnemyTimer();
+        decrementTileTimer();
+        canEscape();
+    }
+
     public boolean isPlayer(int x, int y, Player p){
         for (Player pl : play){
             if(pl != p && pl.getX() == x && pl.getY() == y){
@@ -219,5 +241,135 @@ public class Game {
             }
         }
         return true;
+    }
+
+    public void saveToFile(){
+        try (BufferedWriter b = new BufferedWriter(new FileWriter("level.txt"))){
+            b.write(maze.getWidth() + " " + maze.getHeight() + " " + maze.getExit());
+            b.newLine();
+
+            for(int y = 0 ; y < maze.getHeight() ; y++){
+                for(int x =  0 ; x < maze.getWidth() ; x++){
+
+                    int type = maze.getTile(x, y).getType();
+
+                    switch(type){
+                        case 0 :
+                            b.write(' ');
+                            break ;
+
+                        case 1:
+                            b.write('#');
+                            break;
+
+                        case 2:
+                            b.write('H');
+                            break;
+                        
+                        case 3:
+                            b.write('=');
+                            break;
+
+                        default:
+                            b.write('?');
+                    }
+                }
+                b.newLine();
+            }
+
+            b.write("Play");
+            b.newLine();
+            for (Player p: play){
+                b.write(p.getX() + " " + p.getY() + " " + p.getHp());
+                b.newLine();
+            }
+
+            b.write("Ene");
+            b.newLine();
+            for (Enemy e: ene){
+                b.write(e.getX() + " " + e.getY() + " " + e.getState() + " " + e.getTimeToRespawn());
+                b.newLine();
+            }
+
+            b.write("Tre");
+            b.newLine();
+            for(Treasure t: tre){
+                b.write(t.getX() + " " + t.getY() + " " + t.getCollect());
+                b.newLine();
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void loadFromFile(){
+        try (BufferedReader b = new BufferedReader(new FileReader("level.txt"))){
+            String[] dims = b.readLine().split(" ");
+            this.maze = new Maze(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+            for(int y = 0 ; y < maze.getHeight() ; y++){
+                String line = b.readLine();
+                for(int x = 0 ; x < maze.getWidth() ; x++){
+                    int type;
+                    char c = line.charAt(x);
+                        switch (c) {
+                            case ' ':
+                                type = 0;
+                                break;
+
+                            case '#':
+                                type = 1;
+                                break;
+
+                            case 'H':
+                                type = 2;
+                                break;
+
+                            case '=':
+                                type = 3 ;
+                                break;
+
+                            default:
+                                type = 0 ;
+                        }
+                    maze.getTile(x, y).setType(type);
+                }
+            }
+
+            b.readLine();
+            this.play = new ArrayList<>();
+            String line = b.readLine();
+            while(!line.contentEquals("Ene")){
+                String[] caractereP = line.split(" ");
+                Player p = new Player(Integer.parseInt(caractereP[0]), Integer.parseInt(caractereP[1]));
+                p.setHp(Integer.parseInt(caractereP[2]));
+                play.add(p);
+                line = b.readLine();
+            }
+
+            this.ene = new ArrayList<>();
+            line = b.readLine();
+            while(!line.contentEquals("Tre")){
+                String[] caractereE = line.split(" ");
+                Enemy e = new Enemy(Integer.parseInt(caractereE[0]), Integer.parseInt(caractereE[1]));
+                e.setState(Boolean.parseBoolean(caractereE[2]));
+                e.setTimeToRespawn(Integer.parseInt(caractereE[3]));
+                ene.add(e);
+                line = b.readLine();
+            }
+
+            this.tre = new ArrayList<>();
+            line = b.readLine();
+            while(line != null){
+                String[] caractereT = line.split(" ");
+                Treasure t = new Treasure(Integer.parseInt(caractereT[0]), Integer.parseInt(caractereT[1]));
+                t.setCollect(Boolean.parseBoolean(caractereT[2]));
+                tre.add(t);
+                line = b.readLine();
+            }
+        }
+        catch(IOException e){
+            e.printStackTrace();
+        }
     }
 }

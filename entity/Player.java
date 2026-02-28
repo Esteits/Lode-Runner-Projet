@@ -26,6 +26,5 @@ public class Player extends Character {
     public void respawn(int x, int y){
         this.x = x;
         this.y = y;
-        this.state = true;
     }
 }

@@ -1,7 +1,5 @@
 package map;
 
-import java.io.*;
-
 public class Maze{
     private int width;
     private int height;
@@ -111,83 +109,5 @@ public class Maze{
         }
         mazegenerator.ladder(mazegenerator.getExit(), 0);
         return mazegenerator;
-    }
-
-    public void saveToFile(){
-        try (BufferedWriter b = new BufferedWriter(new FileWriter("level.txt"))){
-
-            for(int y = 0 ; y < this.getHeight() ; y++){
-                for(int x =  0 ; x < this.getWidth() ; x++){
-
-                    int type = this.getTile(x, y).getType();
-
-                    switch(type){
-                        case 0 :
-                            b.write(' ');
-                            break ;
-
-                        case 1:
-                            b.write('#');
-                            break;
-
-                        case 2:
-                            b.write('H');
-                            break;
-                        
-                        case 3:
-                            b.write('=');
-                            break;
-
-                        default:
-                            b.write('?');
-                    }
-                }
-                b.newLine();
-            }
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    public void loadFromFile(){
-        try (BufferedReader b = new BufferedReader(new FileReader("level.txt"))){
-            String line = b.readLine();
-            int y = 0;
-
-            while(line != null){
-                for(int x = 0; x<line.length(); x++){
-                    char c = line.charAt(x);
-                    int type;
-
-                    switch (c) {
-                        case ' ':
-                            type = 0;
-                            break;
-
-                        case '#':
-                            type = 1;
-                            break;
-
-                        case 'H':
-                            type = 2;
-                            break;
-
-                        case '=':
-                            type = 3 ;
-                            break;
-
-                        default:
-                            type = 0 ;
-                    }
-                    this.getTile(x, y).setType(type);
-                }
-                y++;
-                line = b.readLine();
-            }
-        }
-        catch(IOException e){
-            e.printStackTrace();
-        }
     }
 }

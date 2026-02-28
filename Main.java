@@ -1,4 +1,6 @@
 import map.Maze;
+import entity.*;
+import entity.Character;
 
 public class Main {
 
@@ -6,22 +8,21 @@ public class Main {
         //for(int i = 0 ; i<10 ; i++){
             System.out.println();
             System.out.println("Creation");
-            Maze maze = Maze.generation();
-            maze.saveToFile();
-            Maze maze2 = new Maze(maze.getWidth(), maze.getHeight(), maze.getExit());
-            maze2.loadFromFile();
-            for (int y = 0; y < maze2.getHeight(); y++) {
-                for (int x = 0; x < maze2.getWidth(); x++) {
-                    int type = maze2.getTile(x, y).getType();
-                    switch (type) {
-                        case 0: System.out.print(' '); break;
-                        case 1: System.out.print('#'); break;
-                        case 2: System.out.print('H'); break;
-                        case 3: System.out.print('='); break;
-                    }
-                }
-                System.out.println();
-            }
+            Game g = new Game();
+            Enemy e = new Enemy(10, 10);
+            Enemy e1 = new Enemy(10, 13);
+            g.addEnemy(e);
+            g.addEnemy(e1);
+            Player p = new Player(10, 1);
+            Player p1 = new Player(20, 14);
+            g.addPlayer(p);
+            g.addPlayer(p1);
+            Treasure t = new Treasure(10, 10);
+            Treasure t1 = new Treasure(10, 13);
+            g.addTreasure(t);
+            g.addTreasure(t1);
+            g.saveToFile();
+            g.loadFromFile();
         //}
     }
 }

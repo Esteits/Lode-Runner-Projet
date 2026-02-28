@@ -2,7 +2,6 @@ package entity;
 
 public abstract class Character extends Entity{
     protected Direction dir;
-    protected boolean state; //true = normal false = pieger
 
     public enum Direction {
     LEFT,
@@ -12,14 +11,6 @@ public abstract class Character extends Entity{
     public Character(int x, int y){
         super(x, y);
         this.dir = Direction.RIGHT;
-        this.state = true ;
-    }
-
-    public boolean getState(){
-        return this.state;
-    }
-    public void setState(boolean s){
-        this.state = s;
     }
 
     public Direction getDirection(){
