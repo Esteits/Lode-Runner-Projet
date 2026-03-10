@@ -15,13 +15,28 @@ public class Game {
     private List<Enemy> ene;
     private List<Treasure> tre;
 
-    public Game(){
-        this.maze = Maze.generation();
+    public Game(){        this.maze = Maze.generation();
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
         this.tre = new ArrayList<>();
     }
 
+    public Maze getMaze(){
+        return this.maze;
+    }
+
+    public List<Player> getPlay(){
+        return this.play;
+    }
+
+    public List<Enemy> getEne(){
+        return this.ene;
+    }
+
+    public List<Treasure> getTre(){
+        return this.tre;
+    }
+    
     public void addPlayer(Player p){
         this.play.add(p);
     }
@@ -68,7 +83,7 @@ public class Game {
 
     public void movePlayerUp(int ind){
         Player player = play.get(ind);
-        if (maze.getTile(player.getX(), player.getY()-1).getType()==2 && !isPlayer(player.getX(), player.getY()-1, player)){
+        if (maze.getTile(player.getX(), player.getY()).getType()==2 && !isPlayer(player.getX(), player.getY()-1, player)){
             if(player.getY()-1 != 0 || maze.getCanEscape()){
                 player.up();
             }
