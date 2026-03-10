@@ -106,7 +106,7 @@ public class Main extends ApplicationAdapter {
     }
 
     @Override
-    public void dispose() { // super projet
+    public void dispose() {
         batch.dispose();
         bedrock.dispose();
         wall.dispose();
