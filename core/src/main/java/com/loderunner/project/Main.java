@@ -32,7 +32,7 @@ public class Main extends ApplicationAdapter {
     }
 
     @Override
-    public void dispose() {
+    public void dispose() { // super projet
         batch.dispose();
         image.dispose();
     }
