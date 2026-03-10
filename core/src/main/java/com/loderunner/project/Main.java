@@ -19,6 +19,7 @@ public class Main extends ApplicationAdapter {
     private Texture bedrock;
     private Texture ladder;
     private Texture wall;
+    private Texture wallbreak;
     private Texture playerright;
     private Texture playerleft;
     OrthographicCamera camera = new OrthographicCamera();
@@ -32,6 +33,7 @@ public class Main extends ApplicationAdapter {
         bedrock = new Texture("bedrock.png");
         playerright = new Texture("playerright.png");
         playerleft = new Texture("playerleft.png");
+        wallbreak = new Texture("wallbreak.png");
         g.addPlayer(p);
     }
 
@@ -62,10 +64,15 @@ public class Main extends ApplicationAdapter {
                 int type = g.getMaze().getTile(x, y).getType();
                 switch (type) {
                     case 1:
+                        if(g.getMaze().getTile(x, y).getState()){
+                            batch.draw(wall, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight);     
+                        }else{
+                            batch.draw(wallbreak, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight);     
+                        }
                         batch.draw(wall, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight); 
                         break;
                     case 2:
-                        batch.draw(ladder, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight); 
+                            batch.draw(ladder, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight);     
                         break;
                     case 3:
                         batch.draw(bedrock, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight); 
@@ -113,5 +120,6 @@ public class Main extends ApplicationAdapter {
         ladder.dispose();
         playerleft.dispose();
         playerright.dispose();
+        wallbreak.dispose();
     }
 }
