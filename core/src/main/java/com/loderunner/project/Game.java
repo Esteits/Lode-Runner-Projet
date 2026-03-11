@@ -15,11 +15,33 @@ public class Game {
     private List<Enemy> ene;
     private List<Treasure> tre;
 
-    public Game(){        this.maze = Maze.generation();
+    public Game(){  
+        this.maze = Maze.generation();
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
         this.tre = new ArrayList<>();
     }
+
+    public Game(int nbrTreasure){
+        this.maze = Maze.generation();
+        this.play = new ArrayList<>();
+        this.ene = new ArrayList<>();
+        this.tre = new ArrayList<>();
+        while(tre.size()<nbrTreasure){
+            Treasure t = new Treasure((int)(Math.random() * (this.maze.getWidth() - 1)) , (int)(Math.random() * (this.maze.getHeight() - 1)));
+            if (maze.getTile(t.getX(), t.getY() + 1).getType()==1){
+                boolean already = false;
+                for(Treasure treas : this.tre){
+                    if(treas.getX() == t.getX() && treas.getY() == t.getY()){
+                        already = true;
+                    }
+                }
+                if(!already){
+                    this.tre.add(t);
+                }
+            }
+        }
+    }   
 
     public Maze getMaze(){
         return this.maze;

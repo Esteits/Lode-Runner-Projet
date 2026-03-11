@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.loderunner.project.entity.Player;
+import com.loderunner.project.entity.Treasure;
 import com.loderunner.project.entity.Character.Direction;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -13,8 +14,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Input;
 
 public class Main extends ApplicationAdapter {
-    private Game g = new Game();
-    private Player p = new Player(g.getMaze().getExit(), 0);
+    private Game g = new Game(5);
+    private Player p = new Player(g.getMaze().getExit(), 1);
     private SpriteBatch batch;
     private Texture bedrock;
     private Texture ladder;
@@ -22,6 +23,7 @@ public class Main extends ApplicationAdapter {
     private Texture wallbreak;
     private Texture playerright;
     private Texture playerleft;
+    private Texture treasure ;
     OrthographicCamera camera = new OrthographicCamera();
     Viewport viewport = new ScreenViewport(camera);
 
@@ -34,6 +36,7 @@ public class Main extends ApplicationAdapter {
         playerright = new Texture("playerright.png");
         playerleft = new Texture("playerleft.png");
         wallbreak = new Texture("wallbreak.png");
+        treasure = new Texture("treasure.png");
         g.addPlayer(p);
     }
 
@@ -52,62 +55,23 @@ public class Main extends ApplicationAdapter {
         int largeurecran = Gdx.graphics.getWidth();
         int hauteurecran = Gdx.graphics.getHeight();
 
-        int hauteur = g.getMaze().getHeight();
-        int largeur = g.getMaze().getWidth();
+        int height = g.getMaze().getHeight();
+        int width = g.getMaze().getWidth();
 
-        int tileWidth = largeurecran / largeur;
-        int tileHeight = hauteurecran / hauteur;
+        int tileWidth = largeurecran / width;
+        int tileHeight = hauteurecran / height;
 
         batch.begin();
-        for (int y = 0; y < hauteur; y++){
-            for(int x = 0 ; x <largeur; x++){
-                int type = g.getMaze().getTile(x, y).getType();
-                switch (type) {
-                    case 1:
-                        if(g.getMaze().getTile(x, y).getState()){
-                            batch.draw(wall, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight);     
-                        }else{
-                            batch.draw(wallbreak, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight);     
-                        }
-                        break;
-                    case 2:
-                            batch.draw(ladder, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight);     
-                        break;
-                    case 3:
-                        batch.draw(bedrock, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight); 
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
-        for (Player p: g.getPlay()){
-            if(p.getDirection()==Direction.RIGHT){
-                batch.draw(playerright, p.getX()*tileWidth, (hauteur - 1 - p.getY())*tileHeight, tileWidth, tileHeight);
-            }else if (p.getDirection()==Direction.LEFT){
-                batch.draw(playerleft, p.getX()*tileWidth, (hauteur - 1 - p.getY())*tileHeight, tileWidth, tileHeight);
-            }
-        }
+
+        drawMaze(width, height, tileWidth, tileHeight);
+
+        drawPlayer(width, height, tileWidth, tileHeight);
+
+        drawTreasure(width, height, tileWidth, tileHeight);
         batch.end();
-        if(Gdx.input.isKeyJustPressed(Input.Keys.D)){
-        g.movePlayerRight(0);
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.A)){
-            g.movePlayerLeft(0);
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.W)){
-            g.movePlayerUp(0);
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
-            g.movePlayerDown(0);
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-            g.dig(0);
-        }
+       
+        inputPlayer(0);
+        
         g.sec();
     }
 
@@ -120,5 +84,70 @@ public class Main extends ApplicationAdapter {
         playerleft.dispose();
         playerright.dispose();
         wallbreak.dispose();
+    }
+
+    public void drawMaze(int width, int height, int tileWidth, int tileHeight){
+        for (int y = 0; y < height; y++){
+            for(int x = 0 ; x <width; x++){
+                int type = g.getMaze().getTile(x, y).getType();
+                switch (type) {
+                    case 1:
+                        if(g.getMaze().getTile(x, y).getState()){
+                            batch.draw(wall, x*tileWidth, (height - 1 - y) * tileHeight, tileWidth, tileHeight);     
+                        }else{
+                            batch.draw(wallbreak, x*tileWidth, (height - 1 - y) * tileHeight, tileWidth, tileHeight);     
+                        }
+                        break;
+                    case 2:
+                            batch.draw(ladder, x*tileWidth, (height - 1 - y) * tileHeight, tileWidth, tileHeight);     
+                        break;
+                    case 3:
+                        batch.draw(bedrock, x*tileWidth, (height - 1 - y) * tileHeight, tileWidth, tileHeight); 
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    public void drawPlayer(int width, int height, int tileWidth, int tileHeight){
+        for (Player p: g.getPlay()){
+            if(p.getDirection()==Direction.RIGHT){
+                batch.draw(playerright, p.getX()*tileWidth, (height - 1 - p.getY())*tileHeight, tileWidth, tileHeight);
+            }else if (p.getDirection()==Direction.LEFT){
+                batch.draw(playerleft, p.getX()*tileWidth, (height - 1 - p.getY())*tileHeight, tileWidth, tileHeight);
+            }
+        }
+    }
+
+    public void drawTreasure(int width, int height, int tileWidth, int tileHeight){
+        for(Treasure t : g.getTre()){
+            if(!t.getCollect()){
+                batch.draw(treasure, t.getX()*tileWidth, (height - 1 - t.getY())*tileHeight, tileWidth, tileHeight);
+            }
+        }
+    }
+
+    public void inputPlayer(int ind){
+        if(Gdx.input.isKeyJustPressed(Input.Keys.D)){
+            g.movePlayerRight(ind);
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.A)){
+            g.movePlayerLeft(ind);
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.W)){
+            g.movePlayerUp(ind);
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
+            g.movePlayerDown(ind);
+        }
+
+        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+            g.dig(ind);
+        }
     }
 }
