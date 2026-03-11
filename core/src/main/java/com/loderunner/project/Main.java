@@ -90,19 +90,19 @@ public class Main extends ApplicationAdapter {
             }
         }
         batch.end();
-        if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)){
+        if(Gdx.input.isKeyJustPressed(Input.Keys.D)){
         g.movePlayerRight(0);
         }
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
+        if(Gdx.input.isKeyJustPressed(Input.Keys.A)){
             g.movePlayerLeft(0);
         }
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){
+        if(Gdx.input.isKeyJustPressed(Input.Keys.W)){
             g.movePlayerUp(0);
         }
 
-        if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
+        if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
             g.movePlayerDown(0);
         }
 

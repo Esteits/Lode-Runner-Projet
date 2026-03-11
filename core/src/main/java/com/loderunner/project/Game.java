@@ -109,7 +109,7 @@ public class Game {
         Tiles tile = maze.getTile(digX, digY);
         if(tile.getType()==1 && digX != maze.getWidth()-1 && digX != 0){
             tile.setState(false);
-            tile.setRespawn(10);
+            tile.setRespawn(100);
         }
     }
 
