@@ -69,7 +69,6 @@ public class Main extends ApplicationAdapter {
                         }else{
                             batch.draw(wallbreak, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight);     
                         }
-                        batch.draw(wall, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight); 
                         break;
                     case 2:
                             batch.draw(ladder, x*tileWidth, (hauteur - 1 - y) * tileHeight, tileWidth, tileHeight);     
