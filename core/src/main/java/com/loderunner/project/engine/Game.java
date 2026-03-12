@@ -1,4 +1,4 @@
-package com.loderunner.project;
+package com.loderunner.project.engine;
 
 import com.loderunner.project.map.Maze;
 import com.loderunner.project.map.Tiles;
@@ -27,6 +27,11 @@ public class Game {
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
         this.tre = new ArrayList<>();
+        for(int i = 1 ; i<5 ; i++){
+            Enemy e = new Enemy(this.maze.getExit(), 0);
+            e.setTimeToRespawn(50*i);
+            this.ene.add(e);
+        }
         while(tre.size()<nbrTreasure){
             Treasure t = new Treasure((int)(Math.random() * (this.maze.getWidth() - 1)) , (int)(Math.random() * (this.maze.getHeight() - 1)));
             if (maze.getTile(t.getX(), t.getY() + 1).getType()==1){
@@ -409,6 +414,17 @@ public class Game {
         }
         catch(IOException e){
             e.printStackTrace();
+        }
+    }
+
+    public void moveEnemy(){
+        Player p = this.play.get(0);
+        for(Enemy e : this.ene){
+            if(p.getX()>e.getX()){
+                e.right();
+            }else{
+                e.left();
+            }
         }
     }
 }

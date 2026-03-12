@@ -31,5 +31,5 @@ public class Enemy extends Character{
         this.timetorespawn = 0;
         this.state = true;
     }
-
+    
 }

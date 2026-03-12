@@ -5,6 +5,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.loderunner.project.engine.EnemyThread;
+import com.loderunner.project.engine.Game;
+import com.loderunner.project.entity.Enemy;
 import com.loderunner.project.entity.Player;
 import com.loderunner.project.entity.Treasure;
 import com.loderunner.project.entity.Character.Direction;
@@ -15,6 +18,7 @@ import com.badlogic.gdx.Input;
 
 public class Main extends ApplicationAdapter {
     private Game g = new Game(5);
+    private EnemyThread ia = new EnemyThread(g);
     private Player p = new Player(g.getMaze().getExit(), 1);
     private SpriteBatch batch;
     private Texture bedrock;
@@ -24,6 +28,7 @@ public class Main extends ApplicationAdapter {
     private Texture playerright;
     private Texture playerleft;
     private Texture treasure ;
+    private Texture enemy;
     OrthographicCamera camera = new OrthographicCamera();
     Viewport viewport = new ScreenViewport(camera);
 
@@ -37,7 +42,9 @@ public class Main extends ApplicationAdapter {
         playerleft = new Texture("playerleft.png");
         wallbreak = new Texture("wallbreak.png");
         treasure = new Texture("treasure.png");
+        enemy = new Texture("enemy.png");
         g.addPlayer(p);
+        ia.start();
     }
 
     @Override
@@ -68,6 +75,9 @@ public class Main extends ApplicationAdapter {
         drawPlayer(width, height, tileWidth, tileHeight);
 
         drawTreasure(width, height, tileWidth, tileHeight);
+
+        drawEnemy(width, height, tileWidth, tileHeight);
+
         batch.end();
        
         inputPlayer(0);
@@ -129,6 +139,12 @@ public class Main extends ApplicationAdapter {
         }
     }
 
+    public void drawEnemy(int width, int height, int tileWidth, int tileHeight){
+        for(Enemy e : g.getEne()){
+            batch.draw(enemy, e.getX()*tileWidth, (height - 1 - e.getY())*tileHeight, tileWidth, tileHeight);
+        }
+    }
+
     public void inputPlayer(int ind){
         if(Gdx.input.isKeyJustPressed(Input.Keys.D)){
             g.movePlayerRight(ind);
@@ -150,4 +166,5 @@ public class Main extends ApplicationAdapter {
             g.dig(ind);
         }
     }
+
 }
