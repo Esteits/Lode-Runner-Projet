@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.loderunner.project.engine.EnemyThread;
 import com.loderunner.project.engine.Game;
+import com.loderunner.project.engine.StartEnemyThread;
 import com.loderunner.project.entity.Enemy;
 import com.loderunner.project.entity.Player;
 import com.loderunner.project.entity.Treasure;
@@ -18,8 +19,8 @@ import com.badlogic.gdx.Input;
 
 public class Main extends ApplicationAdapter {
     private Game g = new Game(5);
-    private EnemyThread ia = new EnemyThread(g);
     private Player p = new Player(g.getMaze().getExit(), 1);
+    private StartEnemyThread set = new StartEnemyThread();
     private SpriteBatch batch;
     private Texture bedrock;
     private Texture ladder;
@@ -44,7 +45,11 @@ public class Main extends ApplicationAdapter {
         treasure = new Texture("treasure.png");
         enemy = new Texture("enemy.png");
         g.addPlayer(p);
-        ia.start();
+        for(int i = 0 ; i < g.getEne().size() ; i++){
+            EnemyThread ia = new EnemyThread(g, i);
+            set.addThreadEnemy(ia);
+        }
+        set.start();
     }
 
     @Override

@@ -29,7 +29,6 @@ public class Game {
         this.tre = new ArrayList<>();
         for(int i = 1 ; i<5 ; i++){
             Enemy e = new Enemy(this.maze.getExit(), 0);
-            e.setTimeToRespawn(50*i);
             this.ene.add(e);
         }
         while(tre.size()<nbrTreasure){
@@ -124,6 +123,20 @@ public class Game {
         }
     }
 
+    public void moveEnemy(int ind){
+        Player p = this.play.get(0);
+        Enemy e = this.ene.get(ind);
+        if(p.getY()>e.getY()){
+            e.down();
+        }else{
+            if(p.getX()>e.getX()){
+                e.right();
+            }else{
+                e.left();
+            }
+        }
+    }
+
     public void dig(int ind){
         Player player = play.get(ind);
         int digX = player.getX() ;
@@ -136,7 +149,7 @@ public class Game {
         Tiles tile = maze.getTile(digX, digY);
         if(tile.getType()==1 && digX != maze.getWidth()-1 && digX != 0){
             tile.setState(false);
-            tile.setRespawn(100);
+            tile.setRespawn(500);
         }
     }
 
@@ -166,7 +179,7 @@ public class Game {
             Enemy e = (Enemy) c;
             if(maze.getTile(c.getX(), c.getY()).getType()==1 && maze.getTile(c.getX(), c.getY()).getState()==false){
                 e.setState(false);
-                e.setTimeToRespawn(10);
+                e.setTimeToRespawn(250);
             }
         }
     }
@@ -414,17 +427,6 @@ public class Game {
         }
         catch(IOException e){
             e.printStackTrace();
-        }
-    }
-
-    public void moveEnemy(){
-        Player p = this.play.get(0);
-        for(Enemy e : this.ene){
-            if(p.getX()>e.getX()){
-                e.right();
-            }else{
-                e.left();
-            }
         }
     }
 }
