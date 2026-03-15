@@ -123,16 +123,18 @@ public class Game {
         }
     }
 
-    public void moveEnemy(int ind){
-        Player p = this.play.get(0);
+    public synchronized void moveEnemy(int ind){
         Enemy e = this.ene.get(ind);
-        if(p.getY()>e.getY()){
-            e.down();
-        }else{
-            if(p.getX()>e.getX()){
-                e.right();
+        if(e.getState()){
+        Player p = this.play.get(0);
+            if(p.getY()>e.getY()){
+                e.down();
             }else{
-                e.left();
+                if(p.getX()>e.getX()){
+                    e.right();
+                }else{
+                    e.left();
+                }
             }
         }
     }

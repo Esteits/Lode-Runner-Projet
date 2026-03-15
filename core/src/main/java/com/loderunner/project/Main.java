@@ -99,6 +99,7 @@ public class Main extends ApplicationAdapter {
         playerleft.dispose();
         playerright.dispose();
         wallbreak.dispose();
+        set.stopAll();
     }
 
     public void drawMaze(int width, int height, int tileWidth, int tileHeight){

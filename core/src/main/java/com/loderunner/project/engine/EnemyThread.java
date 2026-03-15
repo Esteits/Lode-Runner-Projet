@@ -3,22 +3,22 @@ package com.loderunner.project.engine;
 public class EnemyThread extends Thread{
     
     private Game game;
-    private boolean run;
+    private volatile boolean running;
     private int ind;
 
     public EnemyThread(Game g, int ind){
         this.game = g;
-        this.run = true;
+        this.running = true;
         this.ind = ind;
     }
 
-    public int getINd(){
+    public int getInd(){
         return this.ind;
     }
 
     @Override
     public void run(){
-        while(run){
+        while(running){
             int time = (int)(Math.random()*900)+100;
             try {
                 game.moveEnemy(ind);
@@ -27,5 +27,9 @@ public class EnemyThread extends Thread{
                 e.printStackTrace();
             }
         }
+    }
+
+    public void stopRun(){
+        this.running = false;
     }
 }

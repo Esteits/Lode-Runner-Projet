@@ -4,11 +4,11 @@ import java.util.*;
 
 public class StartEnemyThread extends Thread {
     private List<EnemyThread> ennThread;
-    private boolean run;
+    private boolean running;
 
     public StartEnemyThread(){
         this.ennThread = new ArrayList<>();
-        this.run = true ;
+        this.running = true ;
     }
 
     public void addThreadEnemy(EnemyThread et){
@@ -17,7 +17,7 @@ public class StartEnemyThread extends Thread {
 
     @Override
     public void run(){
-        while(run){
+        while(running){
             for(int i = 0 ; i < ennThread.size() ; i++){
                 try{
                     sleep(2000 + 1000 * i);
@@ -26,7 +26,13 @@ public class StartEnemyThread extends Thread {
                     e.printStackTrace();
                 }
             }
-            this.run = false;
+            this.running = false;
+        }
+    }
+
+    public void stopAll(){
+        for(int i = 0 ; i < ennThread.size() ; i++){
+            ennThread.get(i).stopRun();
         }
     }
 }
