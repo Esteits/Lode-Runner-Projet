@@ -22,11 +22,15 @@ public class Game {
         this.tre = new ArrayList<>();
     }
 
-    public Game(int nbrTreasure){
+    public Game(int nbrTreasure, int nbrPlayer){
         this.maze = Maze.generation();
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
         this.tre = new ArrayList<>();
+        while(play.size()<nbrPlayer){
+            Player p = new Player(this.getMaze().getExit(), 1);
+            this.play.add(p);
+        }
         for(int i = 1 ; i<5 ; i++){
             Enemy e = new Enemy(this.maze.getExit(), 0);
             this.ene.add(e);
@@ -300,6 +304,10 @@ public class Game {
             }
         }
         return true;
+    }
+
+    public Game nextLevel(){
+        return new Game(5, 1);
     }
 
     public void saveToFile(){

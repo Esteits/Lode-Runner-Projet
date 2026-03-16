@@ -18,8 +18,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Input;
 
 public class Main extends ApplicationAdapter {
-    private Game g = new Game(5);
-    private Player p = new Player(g.getMaze().getExit(), 1);
+    private Game g = new Game(5, 1);
     private StartEnemyThread set = new StartEnemyThread();
     private SpriteBatch batch;
     private Texture bedrock;
@@ -44,7 +43,6 @@ public class Main extends ApplicationAdapter {
         wallbreak = new Texture("wallbreak.png");
         treasure = new Texture("treasure.png");
         enemy = new Texture("enemy.png");
-        g.addPlayer(p);
         for(int i = 0 ; i < g.getEne().size() ; i++){
             EnemyThread ia = new EnemyThread(g, i);
             set.addThreadEnemy(ia);
@@ -88,6 +86,17 @@ public class Main extends ApplicationAdapter {
         inputPlayer(0);
         
         g.sec();
+
+        if(g.win()){
+            set.stopAll();
+            g=g.nextLevel();
+            set = new StartEnemyThread();
+            for(int i = 0 ; i < g.getEne().size() ; i++){
+                EnemyThread ia = new EnemyThread(g, i);
+                set.addThreadEnemy(ia);
+            }
+            set.start();
+        }
     }
 
     @Override

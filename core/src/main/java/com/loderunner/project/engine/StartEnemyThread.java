@@ -34,6 +34,7 @@ public class StartEnemyThread extends Thread {
         for(int i = 0 ; i < ennThread.size() ; i++){
             ennThread.get(i).stopRun();
         }
+        ennThread.clear();
     }
 }
 
