@@ -2,23 +2,25 @@ package com.loderunner.project;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.loderunner.project.engine.EnemyThread;
 import com.loderunner.project.engine.Game;
-import com.loderunner.project.entity.Character.Direction;
+import com.loderunner.project.engine.StartEnemyThread;
 import com.loderunner.project.entity.Enemy;
 import com.loderunner.project.entity.Player;
 import com.loderunner.project.entity.Treasure;
-
+import com.loderunner.project.entity.Character.Direction;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.Input;
 
 public class Main extends ApplicationAdapter {
     private Game g = new Game(5);
     private Player p = new Player(g.getMaze().getExit(), 1);
+    private StartEnemyThread set = new StartEnemyThread();
     private SpriteBatch batch;
     private Texture bedrock;
     private Texture ladder;
@@ -30,9 +32,6 @@ public class Main extends ApplicationAdapter {
     private Texture enemy;
     OrthographicCamera camera = new OrthographicCamera();
     Viewport viewport = new ScreenViewport(camera);
-    
-    private float timer = 0f;  // accumulateur qui stocke les fractions de secondes écoulés.
-    private float tempsParTour = 0.10f; // Une action toutes les 0.10 secondes ( 10 tours / sec ).
 
     @Override
     public void create() {
@@ -46,6 +45,11 @@ public class Main extends ApplicationAdapter {
         treasure = new Texture("treasure.png");
         enemy = new Texture("enemy.png");
         g.addPlayer(p);
+        for(int i = 0 ; i < g.getEne().size() ; i++){
+            EnemyThread ia = new EnemyThread(g, i);
+            set.addThreadEnemy(ia);
+        }
+        set.start();
     }
 
     @Override
@@ -83,12 +87,7 @@ public class Main extends ApplicationAdapter {
        
         inputPlayer(0);
         
-        timer += Gdx.graphics.getDeltaTime(); // On récupère le temps écoulé depuis la dernière image.
-        
-        while (timer >= tempsParTour) { // Si l'accumulateur dépasse 0.10s on déclenche un tour de jeu.
-            g.sec();  // On applique la gravité
-            timer -= tempsParTour; // On soustrait le temps consommé
-        }
+        g.sec();
     }
 
     @Override
@@ -100,8 +99,7 @@ public class Main extends ApplicationAdapter {
         playerleft.dispose();
         playerright.dispose();
         wallbreak.dispose();
-        treasure.dispose();
-        enemy.dispose();
+        set.stopAll();
     }
 
     public void drawMaze(int width, int height, int tileWidth, int tileHeight){
