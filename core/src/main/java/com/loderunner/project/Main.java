@@ -12,10 +12,12 @@ import com.loderunner.project.entity.Enemy;
 import com.loderunner.project.entity.Player;
 import com.loderunner.project.entity.Treasure;
 import com.loderunner.project.entity.Character.Direction;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 public class Main extends ApplicationAdapter {
     private Game g = new Game(5, 1);
@@ -29,11 +31,13 @@ public class Main extends ApplicationAdapter {
     private Texture playerleft;
     private Texture treasure ;
     private Texture enemy;
+    private BitmapFont scoreText;
     OrthographicCamera camera = new OrthographicCamera();
     Viewport viewport = new ScreenViewport(camera);
 
     @Override
     public void create() {
+        scoreText = new BitmapFont();
         batch = new SpriteBatch();
         ladder = new Texture("ladder.png");
         wall = new Texture("wall.png");
@@ -81,6 +85,10 @@ public class Main extends ApplicationAdapter {
 
         drawEnemy(width, height, tileWidth, tileHeight);
 
+        scoreText.draw(batch, ""  + g.getScore(), 20, 20);
+        scoreText.getData().setScale(2);
+        scoreText.setColor(Color.RED);
+
         batch.end();
        
         inputPlayer(0);
@@ -89,7 +97,9 @@ public class Main extends ApplicationAdapter {
 
         if(g.win()){
             set.stopAll();
+            int sco = g.getScore();
             g=g.nextLevel();
+            g.setScore(sco + 1000);
             set = new StartEnemyThread();
             for(int i = 0 ; i < g.getEne().size() ; i++){
                 EnemyThread ia = new EnemyThread(g, i);
@@ -109,6 +119,7 @@ public class Main extends ApplicationAdapter {
         playerright.dispose();
         wallbreak.dispose();
         set.stopAll();
+        scoreText.dispose();
     }
 
     public void drawMaze(int width, int height, int tileWidth, int tileHeight){

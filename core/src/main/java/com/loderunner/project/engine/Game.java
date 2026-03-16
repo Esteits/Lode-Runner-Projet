@@ -10,12 +10,14 @@ import java.io.*;
 import java.util.*;
 
 public class Game {
+    private int score;
     private Maze maze;
     private List<Player> play;
     private List<Enemy> ene;
     private List<Treasure> tre;
 
     public Game(){  
+        this.score = 0;
         this.maze = Maze.generation();
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
@@ -23,6 +25,7 @@ public class Game {
     }
 
     public Game(int nbrTreasure, int nbrPlayer){
+        this.score = 0;
         this.maze = Maze.generation();
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
@@ -49,7 +52,14 @@ public class Game {
                 }
             }
         }
-    }   
+    }
+    
+    public int getScore(){
+        return this.score;
+    }
+    public void setScore(int s){
+        this.score=s;
+    }
 
     public Maze getMaze(){
         return this.maze;
@@ -183,7 +193,8 @@ public class Game {
 
         if (c instanceof Enemy){
             Enemy e = (Enemy) c;
-            if(maze.getTile(c.getX(), c.getY()).getType()==1 && maze.getTile(c.getX(), c.getY()).getState()==false){
+            if(maze.getTile(c.getX(), c.getY()).getType()==1 && maze.getTile(c.getX(), c.getY()).getState()==false && e.getFree()){
+                this.score += 10;
                 e.setFree(false);
                 e.setTimeToRespawn(250);
             }
@@ -271,6 +282,9 @@ public class Game {
                 for (Treasure t: tre){
                     if (!t.getCollect()){
                         if (p.getX()==t.getX() && p.getY()==t.getY()){
+                            if(!t.getCollect()){
+                                this.score+=100;
+                            }
                             t.setCollect(true);
                         }
                     }
