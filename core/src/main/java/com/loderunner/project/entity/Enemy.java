@@ -1,14 +1,23 @@
 package com.loderunner.project.entity;
 
 public class Enemy extends Character{
-    private boolean state ;  //true = normal false = pieger
+    private boolean state; //true = joue false = desasctiver
+    private boolean free ;  //true = normal false = pieger
     private int timetorespawn;
 
 
     public Enemy(int x, int y){
         super(x, y);
         this.timetorespawn = 0;
-        this.state = true;
+        this.free = true;
+        this.state = false;
+    }
+
+    public boolean getState(){
+        return this.state;
+    }
+    public void setState(boolean s){
+        this.state = s;
     }
 
     public int getTimeToRespawn(){
@@ -18,18 +27,18 @@ public class Enemy extends Character{
         this.timetorespawn = time ;
     }
 
-     public boolean getState(){
-        return this.state;
+     public boolean getFree(){
+        return this.free;
     }
-    public void setState(boolean s){
-        this.state = s;
+    public void setFree(boolean t){
+        this.free = t;
     }
 
     public void respawn(int x, int y){
         this.x = x;
         this.y = y;
         this.timetorespawn = 0;
-        this.state = true;
+        this.free = true;
     }
     
 }

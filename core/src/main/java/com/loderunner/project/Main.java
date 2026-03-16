@@ -147,7 +147,9 @@ public class Main extends ApplicationAdapter {
 
     public void drawEnemy(int width, int height, int tileWidth, int tileHeight){
         for(Enemy e : g.getEne()){
-            batch.draw(enemy, e.getX()*tileWidth, (height - 1 - e.getY())*tileHeight, tileWidth, tileHeight);
+            if(e.getState()){
+                batch.draw(enemy, e.getX()*tileWidth, (height - 1 - e.getY())*tileHeight, tileWidth, tileHeight);
+            }
         }
     }
 

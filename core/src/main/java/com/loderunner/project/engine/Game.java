@@ -125,7 +125,7 @@ public class Game {
 
     public synchronized void moveEnemy(int ind){
         Enemy e = this.ene.get(ind);
-        if(e.getState()){
+        if(e.getFree()){
         Player p = this.play.get(0);
             if(p.getY()>e.getY()){
                 e.down();
@@ -161,7 +161,7 @@ public class Game {
         }
 
         for (Enemy e: ene){
-            if(c.getX() == e.getX() && c.getY() == e.getY()-1 && e.getState()==false){
+            if(c.getX() == e.getX() && c.getY() == e.getY()-1 && e.getFree()==false){
                 return;
             }
         }
@@ -180,20 +180,20 @@ public class Game {
         if (c instanceof Enemy){
             Enemy e = (Enemy) c;
             if(maze.getTile(c.getX(), c.getY()).getType()==1 && maze.getTile(c.getX(), c.getY()).getState()==false){
-                e.setState(false);
+                e.setFree(false);
                 e.setTimeToRespawn(250);
             }
         }
     }
 
-    public void gravity(){
+    public synchronized void gravity(){
         for(Player p : play){
             if(!p.playerDead()){
                 fall(p);
             }
         }
         for(Enemy e : ene){
-            if(e.getState()){
+            if(e.getFree() && e.getState()){
                 fall(e);
             }    
         }
@@ -201,11 +201,11 @@ public class Game {
 
     public void decrementEnemyTimer(){
         for(Enemy e : ene){
-            if(!e.getState()){
+            if(!e.getFree()){
                 e.setTimeToRespawn(e.getTimeToRespawn()-1);
                 if(e.getTimeToRespawn() <= 0){
                     e.respawn(maze.getExit(), 0);
-                    e.setState(true);
+                    e.setFree(true);
                 }
             }
         }
@@ -223,7 +223,7 @@ public class Game {
 
         for(Enemy e : ene){
             if (e.getX()==x && e.getY()==y){
-                e.setState(true);
+                e.setFree(true);
                 e.respawn(maze.getExit(), 0);
             }
         }
@@ -248,7 +248,7 @@ public class Game {
         for(Player p : play){
             if (!p.playerDead()){
                 for (Enemy e: ene){
-                    if (e.getState()){
+                    if (e.getFree() && e.getState()){
                         if (p.getX()==e.getX() && p.getY()==e.getY()){
                             p.loseHp();
                             if(!p.playerDead()){
@@ -346,7 +346,7 @@ public class Game {
             b.write("Ene");
             b.newLine();
             for (Enemy e: ene){
-                b.write(e.getX() + " " + e.getY() + " " + e.getState() + " " + e.getTimeToRespawn());
+                b.write(e.getX() + " " + e.getY() + " " + e.getFree() + " " + e.getTimeToRespawn() + " " + e.getState());
                 b.newLine();
             }
 
@@ -411,8 +411,9 @@ public class Game {
             while(!line.contentEquals("Tre")){
                 String[] caractereE = line.split(" ");
                 Enemy e = new Enemy(Integer.parseInt(caractereE[0]), Integer.parseInt(caractereE[1]));
-                e.setState(Boolean.parseBoolean(caractereE[2]));
+                e.setFree(Boolean.parseBoolean(caractereE[2]));
                 e.setTimeToRespawn(Integer.parseInt(caractereE[3]));
+                e.setState(Boolean.parseBoolean(caractereE[4]));
                 ene.add(e);
                 line = b.readLine();
             }

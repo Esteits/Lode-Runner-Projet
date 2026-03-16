@@ -18,6 +18,7 @@ public class EnemyThread extends Thread{
 
     @Override
     public void run(){
+        game.getEne().get(ind).setState(true);
         while(running){
             int time = (int)(Math.random()*900)+100;
             try {
