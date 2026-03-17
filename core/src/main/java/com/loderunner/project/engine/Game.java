@@ -93,6 +93,7 @@ public class Game {
         gravity();
         playerEnemyCol();
         playerTreasureCol();
+        decrementPlayerInvTimer();
         decrementEnemyTimer();
         decrementTileTimer();
         canEscape();
@@ -214,10 +215,20 @@ public class Game {
         }
     }
 
+    public void decrementPlayerInvTimer(){
+        for(Player p : play){
+            if(p.getInvin()){
+                p.setTimeInve(p.getTimeInv() - 1);
+            }if(p.getTimeInv() <= 0){
+                p.setInvin(false);
+            }
+        }
+    }
+
     public void decrementEnemyTimer(){
         for(Enemy e : ene){
             if(!e.getFree()){
-                e.setTimeToRespawn(e.getTimeToRespawn()-1);
+                e.setTimeToRespawn(e.getTimeToRespawn() - 1);
                 if(e.getTimeToRespawn() <= 0){
                     e.respawn(maze.getExit(), 0);
                     e.setFree(true);
@@ -261,12 +272,14 @@ public class Game {
 
     public void playerEnemyCol(){
         for(Player p : play){
-            if (!p.playerDead()){
+            if (!p.playerDead() && !p.getInvin()){
                 for (Enemy e: ene){
                     if (e.getFree() && e.getState()){
                         if (p.getX()==e.getX() && p.getY()==e.getY()){
                             p.loseHp();
                             if(!p.playerDead()){
+                                p.setInvin(true);
+                                p.setTimeInve(100);
                                 p.respawn(maze.getExit(), 1);
                             }
                         }

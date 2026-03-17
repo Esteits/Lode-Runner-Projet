@@ -31,6 +31,7 @@ public class Main extends ApplicationAdapter {
     private Texture playerleft;
     private Texture treasure ;
     private Texture enemy;
+    private Texture heart;
     private BitmapFont scoreText;
     OrthographicCamera camera = new OrthographicCamera();
     Viewport viewport = new ScreenViewport(camera);
@@ -47,6 +48,7 @@ public class Main extends ApplicationAdapter {
         wallbreak = new Texture("wallbreak.png");
         treasure = new Texture("treasure.png");
         enemy = new Texture("enemy.png");
+        heart = new Texture("heart.png");
         for(int i = 0 ; i < g.getEne().size() ; i++){
             EnemyThread ia = new EnemyThread(g, i);
             set.addThreadEnemy(ia);
@@ -66,18 +68,20 @@ public class Main extends ApplicationAdapter {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
 
-        int largeurecran = Gdx.graphics.getWidth();
-        int hauteurecran = Gdx.graphics.getHeight();
+        int widthScreen = Gdx.graphics.getWidth();
+        int heightScreen = Gdx.graphics.getHeight();
 
         int height = g.getMaze().getHeight();
         int width = g.getMaze().getWidth();
 
-        int tileWidth = largeurecran / width;
-        int tileHeight = hauteurecran / height;
+        int tileWidth = widthScreen / width;
+        int tileHeight = heightScreen / height;
 
         batch.begin();
 
         drawMaze(width, height, tileWidth, tileHeight);
+
+        drawHeart(widthScreen, heightScreen, tileWidth, tileHeight);
 
         drawPlayer(width, height, tileWidth, tileHeight);
 
@@ -85,9 +89,7 @@ public class Main extends ApplicationAdapter {
 
         drawEnemy(width, height, tileWidth, tileHeight);
 
-        scoreText.draw(batch, ""  + g.getScore(), 20, 20);
-        scoreText.getData().setScale(2);
-        scoreText.setColor(Color.RED);
+        score();
 
         batch.end();
        
@@ -95,18 +97,7 @@ public class Main extends ApplicationAdapter {
         
         g.sec();
 
-        if(g.win()){
-            set.stopAll();
-            int sco = g.getScore();
-            g=g.nextLevel();
-            g.setScore(sco + 1000);
-            set = new StartEnemyThread();
-            for(int i = 0 ; i < g.getEne().size() ; i++){
-                EnemyThread ia = new EnemyThread(g, i);
-                set.addThreadEnemy(ia);
-            }
-            set.start();
-        }
+        nextLevel();
     }
 
     @Override
@@ -118,6 +109,7 @@ public class Main extends ApplicationAdapter {
         playerleft.dispose();
         playerright.dispose();
         wallbreak.dispose();
+        heart.dispose();
         set.stopAll();
         scoreText.dispose();
     }
@@ -143,6 +135,16 @@ public class Main extends ApplicationAdapter {
                     default:
                         break;
                 }
+            }
+        }
+    }
+
+    public void drawHeart(int widthScreen, int heightScreen, int tileWidth, int tileHeight){
+        int j = 0;
+        for(Player p: g.getPlay()){
+            j += 1;
+            for(int i = 1 ; i <= p.getHp() ; i++) {
+                batch.draw(heart, widthScreen-tileWidth*i, heightScreen-tileHeight*j, tileWidth, tileHeight);
             }
         }
     }
@@ -192,6 +194,27 @@ public class Main extends ApplicationAdapter {
 
         if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
             g.dig(ind);
+        }
+    }
+
+    public void score(){
+        scoreText.draw(batch, ""  + g.getScore(), 0, 22);
+        scoreText.getData().setScale(2);
+        scoreText.setColor(Color.BLUE);
+    }
+
+    public void nextLevel(){
+        if(g.win()){
+            set.stopAll();
+            int sco = g.getScore();
+            g=g.nextLevel();
+            g.setScore(sco + 1000);
+            set = new StartEnemyThread();
+            for(int i = 0 ; i < g.getEne().size() ; i++){
+                EnemyThread ia = new EnemyThread(g, i);
+                set.addThreadEnemy(ia);
+            }
+            set.start();
         }
     }
 

@@ -3,6 +3,7 @@ package com.loderunner.project.entity;
 public class Player extends Character {
     private int hp ;
     private boolean invincible;
+    private int timeInv;
 
     public Player(int x, int y){
         super(x, y);
@@ -21,6 +22,13 @@ public class Player extends Character {
     }
     public void setInvin(boolean i){
         this.invincible = i;
+    }
+
+    public int getTimeInv(){
+        return this.timeInv;
+    }
+    public void setTimeInve(int sti){
+        this.timeInv = sti;
     }
 
     public boolean playerDead(){
