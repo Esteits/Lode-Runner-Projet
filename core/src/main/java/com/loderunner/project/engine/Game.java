@@ -181,26 +181,21 @@ public class Game {
             }
         }
 
-        Tiles tileUnder = maze.getTile(c.getX(), c.getY()+1);
-        if((tileUnder.getType()==0 || (tileUnder.getType()==1 && tileUnder.getState()==false))){
-            if (c instanceof Player){
-                Player p = (Player) c;
-                if(isPlayer(p.getX(), p.getY()+1, p)){
-                    return;
-                }
-            }
-            c.down();
-        }
-
         if (c instanceof Enemy){
             Enemy e = (Enemy) c;
             if(maze.getTile(c.getX(), c.getY()).getType()==1 && maze.getTile(c.getX(), c.getY()).getState()==false && e.getFree()){
                 this.score += 10;
                 e.setFree(false);
                 e.setTimeToRespawn(250);
+                return;
             }
         }
+        Tiles tileUnder = maze.getTile(c.getX(), c.getY()+1);
+        if((tileUnder.getType()==0 || (tileUnder.getType()==1 && tileUnder.getState()==false))){
+            c.down();
+        }
     }
+    
 
     public synchronized void gravity(){
         for(Player p : play){

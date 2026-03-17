@@ -1,7 +1,7 @@
 package com.loderunner.project.entity;
 
 public class Enemy extends Character{
-    private boolean state; //true = joue false = desasctiver
+    private boolean state; //true = joue false = desactiver
     private boolean free ;  //true = normal false = pieger
     private int timetorespawn;
 

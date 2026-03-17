@@ -18,6 +18,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
 public class Main extends ApplicationAdapter {
     private Game g = new Game(5, 1);
@@ -33,12 +34,14 @@ public class Main extends ApplicationAdapter {
     private Texture enemy;
     private Texture heart;
     private BitmapFont scoreText;
+    private BitmapFont gameOver;
     OrthographicCamera camera = new OrthographicCamera();
     Viewport viewport = new ScreenViewport(camera);
 
     @Override
     public void create() {
         scoreText = new BitmapFont();
+        gameOver = new BitmapFont();
         batch = new SpriteBatch();
         ladder = new Texture("ladder.png");
         wall = new Texture("wall.png");
@@ -91,6 +94,8 @@ public class Main extends ApplicationAdapter {
 
         score();
 
+        lose();
+
         batch.end();
        
         inputPlayer(0);
@@ -112,11 +117,12 @@ public class Main extends ApplicationAdapter {
         heart.dispose();
         set.stopAll();
         scoreText.dispose();
+        gameOver.dispose();
     }
 
     public void drawMaze(int width, int height, int tileWidth, int tileHeight){
         for (int y = 0; y < height; y++){
-            for(int x = 0 ; x <width; x++){
+            for(int x = 0 ; x < width; x++){
                 int type = g.getMaze().getTile(x, y).getType();
                 switch (type) {
                     case 1:
@@ -151,10 +157,12 @@ public class Main extends ApplicationAdapter {
 
     public void drawPlayer(int width, int height, int tileWidth, int tileHeight){
         for (Player p: g.getPlay()){
-            if(p.getDirection()==Direction.RIGHT){
-                batch.draw(playerright, p.getX()*tileWidth, (height - 1 - p.getY())*tileHeight, tileWidth, tileHeight);
-            }else if (p.getDirection()==Direction.LEFT){
-                batch.draw(playerleft, p.getX()*tileWidth, (height - 1 - p.getY())*tileHeight, tileWidth, tileHeight);
+            if(!p.playerDead()){
+                if(p.getDirection()==Direction.RIGHT){
+                    batch.draw(playerright, p.getX()*tileWidth, (height - 1 - p.getY())*tileHeight, tileWidth, tileHeight);
+                }else if (p.getDirection()==Direction.LEFT){
+                    batch.draw(playerleft, p.getX()*tileWidth, (height - 1 - p.getY())*tileHeight, tileWidth, tileHeight);
+                }
             }
         }
     }
@@ -215,6 +223,20 @@ public class Main extends ApplicationAdapter {
                 set.addThreadEnemy(ia);
             }
             set.start();
+        }
+    }
+    public void lose(){
+        if(g.gameOver()){
+            gameOver.getData().setScale(5);
+
+            GlyphLayout layout = new GlyphLayout(gameOver, "GAME OVER");
+
+            float x = (Gdx.graphics.getWidth() - layout.width) / 2;
+            float y = (Gdx.graphics.getHeight() + layout.height) / 2;
+
+            gameOver.setColor(Color.BLACK);
+            gameOver.draw(batch, layout, x, y);
+            set.stopAll();
         }
     }
 

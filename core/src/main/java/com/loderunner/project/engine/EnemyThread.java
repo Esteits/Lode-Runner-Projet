@@ -31,6 +31,7 @@ public class EnemyThread extends Thread{
     }
 
     public void stopRun(){
+        game.getEne().get(ind).setState(false);
         this.running = false;
     }
 }
