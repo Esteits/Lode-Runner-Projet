@@ -35,7 +35,7 @@ public class Game {
             this.play.add(p);
         }
         for(int i = 1 ; i<5 ; i++){
-            Enemy e = new Enemy(this.maze.getExit(), 0);
+            Enemy e = new EnemyNormal(this.maze.getExit(), 0); // Pour l'instant on va faire apparaitre 5 ennemy normal parce que je n'ai pas comment faire pour en importer plusieur de chaque 
             this.ene.add(e);
         }
         while(tre.size()<nbrTreasure){
@@ -90,6 +90,7 @@ public class Game {
     }
     
     public void sec(){
+        // Faut écrire une nouvelle fonction deplacement ennemy au boulot THOMAS 
         gravity();
         playerEnemyCol();
         playerTreasureCol();
@@ -440,7 +441,7 @@ public class Game {
             line = b.readLine();
             while(!line.contentEquals("Tre")){
                 String[] caractereE = line.split(" ");
-                Enemy e = new Enemy(Integer.parseInt(caractereE[0]), Integer.parseInt(caractereE[1]));
+                Enemy e = new EnemyNormal(Integer.parseInt(caractereE[0]), Integer.parseInt(caractereE[1]));
                 e.setFree(Boolean.parseBoolean(caractereE[2]));
                 e.setTimeToRespawn(Integer.parseInt(caractereE[3]));
                 e.setState(Boolean.parseBoolean(caractereE[4]));

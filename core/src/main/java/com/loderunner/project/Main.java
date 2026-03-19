@@ -5,9 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.loderunner.project.engine.EnemyThread;
 import com.loderunner.project.engine.Game;
-import com.loderunner.project.engine.StartEnemyThread;
 import com.loderunner.project.entity.Enemy;
 import com.loderunner.project.entity.Player;
 import com.loderunner.project.entity.Treasure;
@@ -22,7 +20,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
 public class Main extends ApplicationAdapter {
     private Game g = new Game(5, 1);
-    private StartEnemyThread set = new StartEnemyThread();
     private SpriteBatch batch;
     private Texture bedrock;
     private Texture ladder;
@@ -52,11 +49,6 @@ public class Main extends ApplicationAdapter {
         treasure = new Texture("treasure.png");
         enemy = new Texture("enemy.png");
         heart = new Texture("heart.png");
-        for(int i = 0 ; i < g.getEne().size() ; i++){
-            EnemyThread ia = new EnemyThread(g, i);
-            set.addThreadEnemy(ia);
-        }
-        set.start();
     }
 
     @Override
@@ -115,7 +107,6 @@ public class Main extends ApplicationAdapter {
         playerright.dispose();
         wallbreak.dispose();
         heart.dispose();
-        set.stopAll();
         scoreText.dispose();
         gameOver.dispose();
     }
@@ -160,7 +151,7 @@ public class Main extends ApplicationAdapter {
             if(!p.playerDead()){
                 if(p.getDirection()==Direction.RIGHT){
                     batch.draw(playerright, p.getX()*tileWidth, (height - 1 - p.getY())*tileHeight, tileWidth, tileHeight);
-                }else if (p.getDirection()==Direction.LEFT){
+                }else {
                     batch.draw(playerleft, p.getX()*tileWidth, (height - 1 - p.getY())*tileHeight, tileWidth, tileHeight);
                 }
             }
@@ -213,18 +204,12 @@ public class Main extends ApplicationAdapter {
 
     public void nextLevel(){
         if(g.win()){
-            set.stopAll();
             int sco = g.getScore();
             g=g.nextLevel();
             g.setScore(sco + 1000);
-            set = new StartEnemyThread();
-            for(int i = 0 ; i < g.getEne().size() ; i++){
-                EnemyThread ia = new EnemyThread(g, i);
-                set.addThreadEnemy(ia);
-            }
-            set.start();
         }
     }
+    
     public void lose(){
         if(g.gameOver()){
             gameOver.getData().setScale(5);
@@ -236,8 +221,6 @@ public class Main extends ApplicationAdapter {
 
             gameOver.setColor(Color.BLACK);
             gameOver.draw(batch, layout, x, y);
-            set.stopAll();
         }
     }
-
 }

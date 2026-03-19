@@ -4,8 +4,11 @@ public abstract class Character extends Entity{
     protected Direction dir;
 
     public enum Direction {
-    LEFT,
-    RIGHT
+        LEFT,
+        RIGHT,
+        UP,    
+        DOWN,  
+        NONE 
     }
 
     public Character(int x, int y){
@@ -32,10 +35,12 @@ public abstract class Character extends Entity{
 
     public void up(){
         this.y--;
+        this.dir = Direction.UP; 
     }
 
     public void down(){
-            this.y++;
+        this.y++;
+        this.dir = Direction.DOWN; 
     }
 
     public abstract void respawn(int x, int y);

@@ -1,6 +1,7 @@
 package com.loderunner.project.entity;
+import com.loderunner.project.engine.Game;
 
-public class Enemy extends Character{
+public abstract class Enemy extends Character{
     private boolean state; //true = joue false = desactiver
     private boolean free ;  //true = normal false = pieger
     private int timetorespawn;
@@ -40,5 +41,6 @@ public class Enemy extends Character{
         this.timetorespawn = 0;
         this.free = true;
     }
-    
+
+    public abstract Direction Mouvement(Game game);
 }
