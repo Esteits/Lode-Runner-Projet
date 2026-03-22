@@ -49,6 +49,7 @@ public class Main extends ApplicationAdapter {
         treasure = new Texture("treasure.png");
         enemy = new Texture("enemy.png");
         heart = new Texture("heart.png");
+        g.getPlay().get(0).setHp(0);
     }
 
     @Override
@@ -99,6 +100,7 @@ public class Main extends ApplicationAdapter {
 
     @Override
     public void dispose() {
+        g.saveToFile();
         batch.dispose();
         bedrock.dispose();
         wall.dispose();
@@ -175,24 +177,29 @@ public class Main extends ApplicationAdapter {
     }
 
     public void inputPlayer(int ind){
-        if(Gdx.input.isKeyJustPressed(Input.Keys.D)){
-            g.movePlayerRight(ind);
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ALT_LEFT)){
+            g.loadFromFile();
         }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.A)){
-            g.movePlayerLeft(ind);
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.W)){
-            g.movePlayerUp(ind);
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
-            g.movePlayerDown(ind);
-        }
-
-        if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-            g.dig(ind);
+        if(!g.getPlay().get(ind).playerDead()){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.D)){
+                g.movePlayerRight(ind);
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.A)){
+                g.movePlayerLeft(ind);
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.W)){
+                g.movePlayerUp(ind);
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
+                g.movePlayerDown(ind);
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+                g.dig(ind);
+            }
+        }else{
+            if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
+                g=new Game(5, 1);
+            }
         }
     }
 
