@@ -90,7 +90,7 @@ public class Game {
     }
     
     public void sec(){
-        // Faut écrire une nouvelle fonction deplacement ennemy au boulot THOMAS 
+        movementEnemy();
         gravity();
         playerEnemyCol();
         playerTreasureCol();
@@ -208,6 +208,12 @@ public class Game {
             if(e.getFree() && e.getState()){
                 fall(e);
             }    
+        }
+    }
+
+    public void movementEnemy(){
+        for(Enemy e : this.ene){
+            e.Mouvement(this);
         }
     }
 
