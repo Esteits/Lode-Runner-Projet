@@ -90,7 +90,6 @@ public class Game {
     }
     
     public void sec(){
-        movementEnemy();
         gravity();
         playerEnemyCol();
         playerTreasureCol();
@@ -111,14 +110,14 @@ public class Game {
 
     public void movePlayerRight(int ind){
         Player player = play.get(ind);
-        if (maze.getTile(player.getX()+1, player.getY()).getType()!=3 && maze.getTile(player.getX()+1, player.getY()).getType()!=1 && !isPlayer(player.getX()+1, player.getY(), player)){
+        if (maze.getTile(player.getX()+1, player.getY()).getType()!=3 && (maze.getTile(player.getX()+1, player.getY()).getType()!=1 || !maze.getTile(player.getX()+1, player.getY()).getState()) && !isPlayer(player.getX()+1, player.getY(), player)){
             player.right();
         }
     }
 
     public void movePlayerLeft(int ind){
         Player player = play.get(ind);
-        if (maze.getTile(player.getX()-1, player.getY()).getType()!=3 && maze.getTile(player.getX()-1, player.getY()).getType()!=1 && !isPlayer(player.getX()-1, player.getY(), player)){
+        if (maze.getTile(player.getX()-1, player.getY()).getType()!=3 && (maze.getTile(player.getX()+1, player.getY()).getType()!=1 || !maze.getTile(player.getX()+1, player.getY()).getState()) && !isPlayer(player.getX()-1, player.getY(), player)){
             player.left();
         }
     }
@@ -167,7 +166,7 @@ public class Game {
         Tiles tile = maze.getTile(digX, digY);
         if(tile.getType()==1 && digX != maze.getWidth()-1 && digX != 0){
             tile.setState(false);
-            tile.setRespawn(500);
+            tile.setRespawn(100);
         }
     }
 
@@ -187,7 +186,7 @@ public class Game {
             if(maze.getTile(c.getX(), c.getY()).getType()==1 && maze.getTile(c.getX(), c.getY()).getState()==false && e.getFree()){
                 this.score += 10;
                 e.setFree(false);
-                e.setTimeToRespawn(250);
+                e.setTimeToRespawn(25);
                 return;
             }
         }
@@ -281,7 +280,7 @@ public class Game {
                             p.loseHp();
                             if(!p.playerDead()){
                                 p.setInvin(true);
-                                p.setTimeInve(100);
+                                p.setTimeInve(10);
                                 p.respawn(maze.getExit(), 1);
                             }
                         }

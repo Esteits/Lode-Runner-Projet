@@ -34,6 +34,8 @@ public class Main extends ApplicationAdapter {
     private BitmapFont gameOver;
     OrthographicCamera camera = new OrthographicCamera();
     Viewport viewport = new ScreenViewport(camera);
+    int tick;
+    int tickDep;
 
     @Override
     public void create() {
@@ -50,6 +52,8 @@ public class Main extends ApplicationAdapter {
         enemy = new Texture("enemy.png");
         heart = new Texture("heart.png");
         g.getPlay().get(0).setHp(0);
+        tick = 0;
+        tickDep = 0;
     }
 
     @Override
@@ -73,6 +77,8 @@ public class Main extends ApplicationAdapter {
         int tileWidth = widthScreen / width;
         int tileHeight = heightScreen / height;
 
+        tick+=1;
+
         batch.begin();
 
         drawMaze(width, height, tileWidth, tileHeight);
@@ -93,7 +99,10 @@ public class Main extends ApplicationAdapter {
        
         inputPlayer(0);
         
-        g.sec();
+        if(tick >= 5){
+            g.sec();
+            tick = 0;
+        }
 
         nextLevel();
     }
@@ -181,17 +190,33 @@ public class Main extends ApplicationAdapter {
             g.loadFromFile();
         }
         if(!g.getPlay().get(ind).playerDead()){
-            if(Gdx.input.isKeyJustPressed(Input.Keys.D)){
-                g.movePlayerRight(ind);
+            if(Gdx.input.isKeyPressed(Input.Keys.D)){
+                tickDep += 1;
+                if (tickDep >= 10){
+                    g.movePlayerRight(ind);
+                    tickDep = 0;
+                }
             }
-            if(Gdx.input.isKeyJustPressed(Input.Keys.A)){
-                g.movePlayerLeft(ind);
+            if(Gdx.input.isKeyPressed(Input.Keys.A)){
+                tickDep += 1;
+                if (tickDep >= 10){
+                    g.movePlayerLeft(ind);
+                    tickDep = 0;
+                }
             }
-            if(Gdx.input.isKeyJustPressed(Input.Keys.W)){
-                g.movePlayerUp(ind);
+            if(Gdx.input.isKeyPressed(Input.Keys.W)){
+                tickDep += 1;
+                if (tickDep >= 10){
+                    g.movePlayerUp(ind);
+                    tickDep = 0;
+                }
             }
             if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
-                g.movePlayerDown(ind);
+                tickDep += 1;
+                if (tickDep >= 10){
+                    g.movePlayerDown(ind);
+                    tickDep = 0;
+                }
             }
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
                 g.dig(ind);

@@ -1,43 +1,43 @@
-29 29 22
-======================H======
-=                     H     =
-=            #############H#=
-=                         H =
-=   ####H#####            H =
-=       H                 H =
-=       H   #########H######=
-=       H            H      =
-=       H            H      =
-=  ##H##H            H      =
-=    H  H            H      =
-=H#######            H      =
-=H                   H      =
-=H                   H      =
-=H ###H##########    H      =
-=H    H              H      =
-=H    H              H      =
-=H    H             ###H####=
-=H    H                H    =
-=H    H                H    =
-=H    H                ###H#=
-=H    H                   H =
-=H    H                   H =
-=H    H                   H#=
-=H    H                   H =
-=H    H                   H =
-=#######H######           H =
-=       H                 H =
+29 29 14
+==============H==============
+=             H             =
+=#H########   H             =
+= H           H             =
+= H           H             =
+=H######      H             =
+=H            H             =
+=####H########H             =
+=    H        H             =
+=    H        H             =
+=    H      ##H####         =
+=    H        H             =
+=    H        H             =
+=    H  #########H#         =
+=    H           H          =
+=    H       ###H###########=
+=    H          H           =
+=    H          H           =
+=    H          H      #H###=
+=    H          H       H   =
+=####H###       H       H   =
+=    H          H       H   =
+=    H          H       H   =
+=    H    ##########H#######=
+=    H              H       =
+=    H              H       =
+=########H##############    =
+=        H                  =
 =============================
 Play
-22 1 0
+1 4 5
 Ene
-22 0 true 0 false
-22 0 true 0 false
-22 0 true 0 false
-22 0 true 0 false
+14 0 true 0 false
+14 0 true 0 false
+14 0 true 0 false
+14 0 true 0 false
 Tre
-14 13 false
-6 8 false
-12 5 false
-13 13 false
-24 16 false
+8 1 false
+23 22 false
+27 17 false
+3 19 false
+12 25 false
