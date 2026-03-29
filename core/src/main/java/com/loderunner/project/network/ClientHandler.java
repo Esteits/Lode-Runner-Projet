@@ -5,14 +5,15 @@ import java.net.*;
 import com.loderunner.project.engine.Game;
 
 public class ClientHandler extends Thread{
-    private Game game;
+    private Serveur serv;
     private int playerId;
     private Socket s;
+    private Game game;
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
-    public ClientHandler(Game g, int id, Socket soc) throws IOException{
-        this.game = g;
+    public ClientHandler(Serveur ser, Game g, int id, Socket soc) throws IOException{
+        this.serv = ser;
         this.playerId = id;
         this.s = soc;
         out = new ObjectOutputStream(s.getOutputStream());
@@ -41,6 +42,12 @@ public class ClientHandler extends Thread{
                     case "DIG":
                         game.dig(playerId);
                         break;
+                    case "LOAD":
+                        serv.loadGame();
+                        break;
+                    case "RESTART":
+                        serv.restartGame();
+                        break;
                 }
             }
         }
@@ -51,6 +58,7 @@ public class ClientHandler extends Thread{
 
     public void sendGame(Game game){
         try{
+            this.game = game;
             out.reset();
             out.writeObject(game);
             out.flush();

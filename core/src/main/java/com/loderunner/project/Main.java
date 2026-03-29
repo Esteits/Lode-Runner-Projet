@@ -59,7 +59,7 @@ public class Main extends ApplicationAdapter {
         tick = 0;
         tickDep = 0;
         try {
-        client = new Client(8080);
+        client = new Client("localhost",8080);
         playerId = client.getId();
         } catch (IOException e) {
             e.printStackTrace();
@@ -91,6 +91,7 @@ public class Main extends ApplicationAdapter {
         Game newGame = client.getGame();
         if (newGame != null) {
             g = newGame;
+            g.getPlay().get(0).setHp(0);
         }
         else{
             batch.begin();
@@ -127,8 +128,6 @@ public class Main extends ApplicationAdapter {
         batch.end();
 
         inputPlayer(playerId);
-
-        nextLevel();
     }
 
     @Override
@@ -211,7 +210,7 @@ public class Main extends ApplicationAdapter {
 
     public void inputPlayer(int ind){
         if(Gdx.input.isKeyJustPressed(Input.Keys.ALT_LEFT)){
-            g.loadFromFile();
+            client.action("LOAD");;
         }
         if(!g.getPlay().get(ind).playerDead()){
             if(Gdx.input.isKeyPressed(Input.Keys.D)){
@@ -247,7 +246,7 @@ public class Main extends ApplicationAdapter {
             }
         }else{
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                g=new Game(5, 1);
+                client.action("RESTART");
             }
         }
     }
@@ -256,14 +255,6 @@ public class Main extends ApplicationAdapter {
         scoreText.draw(batch, ""  + g.getScore(), 0, 22);
         scoreText.getData().setScale(2);
         scoreText.setColor(Color.BLUE);
-    }
-
-    public void nextLevel(){
-        if(g.win()){
-            int sco = g.getScore();
-            g=g.nextLevel();
-            g.setScore(sco + 1000);
-        }
     }
     
     public void lose(){

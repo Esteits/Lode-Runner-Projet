@@ -17,7 +17,7 @@ public class Serveur {
         this.port = p;
     }
     public static void main(String[] args) throws Exception{
-        Game game = new Game(5, 2);
+        Game game = new Game(5, 1);
         Serveur serv = new Serveur(game, 8080);
         serv.start();
     }
@@ -30,7 +30,7 @@ public class Serveur {
             while(true) {
                 try {
                     Socket soc = s.accept();
-                    ClientHandler client = new ClientHandler(g, nextIdPlayer, soc);
+                    ClientHandler client = new ClientHandler(this, g, nextIdPlayer, soc);
                     clients.add(client);
                     client.start();
                     nextIdPlayer++;
@@ -51,11 +51,30 @@ public class Serveur {
                 e.printStackTrace();
             }
             g.sec();
+            if(g.win()){
+                int sco = g.getScore();
+                this.g = g.nextLevel();
+                g.setScore(sco + 1000);
+            }
             synchronized(clients){
                 for(ClientHandler ch : clients){
                     ch.sendGame(g);
                 }
             }
+        }
+    }
+
+    public void loadGame(){
+        g.loadFromFile();
+        for(ClientHandler ch : clients) {
+        ch.sendGame(g);
+        }
+    }
+
+    public void restartGame(){
+        this.g = new Game(5, 2);
+        for(ClientHandler ch : clients) {
+            ch.sendGame(g);
         }
     }
 }

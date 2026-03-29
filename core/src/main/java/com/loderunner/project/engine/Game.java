@@ -335,7 +335,7 @@ public class Game implements Serializable{
     }
 
     public Game nextLevel(){
-        return new Game(5, 1);
+        return new Game(5, 2);
     }
 
     public void saveToFile(){
