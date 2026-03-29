@@ -9,7 +9,7 @@ import com.loderunner.project.entity.Character.Direction;
 import java.io.*;
 import java.util.*;
 
-public class Game {
+public class Game implements Serializable{
     private int score;
     private Maze maze;
     private List<Player> play;

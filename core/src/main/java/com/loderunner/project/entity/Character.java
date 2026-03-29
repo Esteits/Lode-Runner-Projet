@@ -1,6 +1,8 @@
 package com.loderunner.project.entity;
 
-public abstract class Character extends Entity{
+import java.io.Serializable;
+
+public abstract class Character extends Entity implements Serializable{
     protected Direction dir;
 
     public enum Direction {

@@ -1,5 +1,7 @@
 package com.loderunner.project;
 
+import java.io.IOException;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -9,6 +11,7 @@ import com.loderunner.project.engine.Game;
 import com.loderunner.project.entity.Enemy;
 import com.loderunner.project.entity.Player;
 import com.loderunner.project.entity.Treasure;
+import com.loderunner.project.network.Client;
 import com.loderunner.project.entity.Character.Direction;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -19,7 +22,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
 public class Main extends ApplicationAdapter {
-    private Game g = new Game(5, 1);
+    private Game g ;
+    private Client client;
+    private int playerId;
     private SpriteBatch batch;
     private Texture bedrock;
     private Texture ladder;
@@ -51,9 +56,15 @@ public class Main extends ApplicationAdapter {
         treasure = new Texture("treasure.png");
         enemy = new Texture("enemy.png");
         heart = new Texture("heart.png");
-        g.getPlay().get(0).setHp(0);
         tick = 0;
         tickDep = 0;
+        try {
+        client = new Client(8080);
+        playerId = client.getId();
+        } catch (IOException e) {
+            e.printStackTrace();
+            client = null;
+        }
     }
 
     @Override
@@ -70,7 +81,25 @@ public class Main extends ApplicationAdapter {
 
         int widthScreen = Gdx.graphics.getWidth();
         int heightScreen = Gdx.graphics.getHeight();
+        if (client == null) {
+            batch.begin();
+            scoreText.draw(batch, "Connexion échouée...", 100, 100);
+            batch.end();
+            return;
+        }
 
+        Game newGame = client.getGame();
+        if (newGame != null) {
+            g = newGame;
+        }
+        else{
+            batch.begin();
+            scoreText.getData().setScale(2);
+            scoreText.setColor(Color.WHITE);
+            scoreText.draw(batch, "En attente du serveur...", 100, Gdx.graphics.getHeight() / 2f);
+            batch.end();
+            return;
+        }
         int height = g.getMaze().getHeight();
         int width = g.getMaze().getWidth();
 
@@ -96,13 +125,8 @@ public class Main extends ApplicationAdapter {
         lose();
 
         batch.end();
-       
-        inputPlayer(0);
-        
-        if(tick >= 5){
-            g.sec();
-            tick = 0;
-        }
+
+        inputPlayer(playerId);
 
         nextLevel();
     }
@@ -193,33 +217,33 @@ public class Main extends ApplicationAdapter {
             if(Gdx.input.isKeyPressed(Input.Keys.D)){
                 tickDep += 1;
                 if (tickDep >= 10){
-                    g.movePlayerRight(ind);
+                    client.action("RIGHT");;
                     tickDep = 0;
                 }
             }
             if(Gdx.input.isKeyPressed(Input.Keys.A)){
                 tickDep += 1;
                 if (tickDep >= 10){
-                    g.movePlayerLeft(ind);
+                    client.action("LEFT");
                     tickDep = 0;
                 }
             }
             if(Gdx.input.isKeyPressed(Input.Keys.W)){
                 tickDep += 1;
                 if (tickDep >= 10){
-                    g.movePlayerUp(ind);
+                    client.action("UP");
                     tickDep = 0;
                 }
             }
-            if(Gdx.input.isKeyJustPressed(Input.Keys.S)){
+            if(Gdx.input.isKeyPressed(Input.Keys.S)){
                 tickDep += 1;
                 if (tickDep >= 10){
-                    g.movePlayerDown(ind);
+                    client.action("DOWN");
                     tickDep = 0;
                 }
             }
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                g.dig(ind);
+                client.action("DIG");;
             }
         }else{
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){

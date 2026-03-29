@@ -1,6 +1,7 @@
 package com.loderunner.project.entity;
+import java.io.Serializable;
 
-public class Treasure extends Entity{
+public class Treasure extends Entity implements Serializable{
     private boolean collect;
 
     public Treasure(int x, int y){

@@ -1,6 +1,7 @@
 package com.loderunner.project.map;
+import java.io.Serializable;
 
-public class Tiles {
+public class Tiles implements Serializable{
     private int type;
     private int x;
     private int y;
