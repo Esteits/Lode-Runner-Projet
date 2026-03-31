@@ -5,20 +5,21 @@ import java.net.*;
 import java.util.*;
 
 import com.loderunner.project.engine.Game;
+import com.loderunner.project.entity.Player;
 
 public class Serveur {
     private int port;
     private Game g;
     private List<ClientHandler> clients = Collections.synchronizedList(new ArrayList<>());
-    private int nextIdPlayer = 0;
+    private List<Player> play = new ArrayList<>();
 
-    Serveur(Game game, int p){
-        this.g = game;
+    Serveur(Game g, int p){
+        this.g = g;
         this.port = p;
     }
     public static void main(String[] args) throws Exception{
-        Game game = new Game(5, 1);
-        Serveur serv = new Serveur(game, 8080);
+        Game g = new Game(5);
+        Serveur serv = new Serveur(g, 8080);
         serv.start();
     }
 
@@ -30,10 +31,11 @@ public class Serveur {
             while(true) {
                 try {
                     Socket soc = s.accept();
-                    ClientHandler client = new ClientHandler(this, g, nextIdPlayer, soc);
+                    Player p = new Player(g.getMaze().getExit(), 1);
+                    this.g.addPlayer(p);
+                    ClientHandler client = new ClientHandler(this, p, soc);
                     clients.add(client);
                     client.start();
-                    nextIdPlayer++;
                     System.out.println("Client connecté");
                 }catch(IOException e){
                     e.printStackTrace();
@@ -50,17 +52,42 @@ public class Serveur {
             }catch(InterruptedException e){
                 e.printStackTrace();
             }
-            g.sec();
-            if(g.win()){
-                int sco = g.getScore();
-                this.g = g.nextLevel();
-                g.setScore(sco + 1000);
+            synchronized(this){
+                g.sec();
+                if(g.win()){
+                    int sco = g.getScore();
+                    addAllPlayer();
+                    this.g = g.nextLevel();
+                    refreshPlayer();
+                    g.setScore(sco + 1000);
+                    respawnAllPlayer();
+                }
             }
             synchronized(clients){
                 for(ClientHandler ch : clients){
                     ch.sendGame(g);
                 }
             }
+        }
+    }
+
+    public void movePlayer(Player p, String action){
+        switch (action) {
+            case "RIGHT":
+                g.movePlayerRight(p);
+                break;
+            case "LEFT":
+                g.movePlayerLeft(p);
+                break;
+            case "DOWN":
+                g.movePlayerDown(p);
+                break;
+            case "UP":
+                g.movePlayerUp(p);
+                break;
+            case "DIG":
+                g.dig(p);
+                break;
         }
     }
 
@@ -71,10 +98,32 @@ public class Serveur {
         }
     }
 
-    public void restartGame(){
-        this.g = new Game(5, 2);
+    public void addAllPlayer(){
+        this.play.clear();
         for(ClientHandler ch : clients) {
-            ch.sendGame(g);
+            this.play.add(ch.getPlayer());
+        } 
+    }
+
+    public void refreshPlayer(){
+        for(int i = 0 ; i < this.play.size() ; i++) {
+            ClientHandler ch = this.clients.get(i);
+            Player p = this.play.get(i);
+            ch.setPlayer(p);
+            this.g.addPlayer(p);
         }
+    }
+
+    public void respawnAllPlayer(){
+        for(ClientHandler ch : clients){
+            ch.getPlayer().respawn(g.getMaze().getExit(), 1);
+        }
+    }
+
+    public void restartGame(){
+        addAllPlayer();
+        this.g = new Game(5);
+        refreshPlayer();
+        respawnAllPlayer();
     }
 }

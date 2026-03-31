@@ -3,62 +3,55 @@ package com.loderunner.project.network;
 import java.io.*;
 import java.net.*;
 import com.loderunner.project.engine.Game;
+import com.loderunner.project.entity.Player;
 
 public class ClientHandler extends Thread{
     private Serveur serv;
-    private int playerId;
+    private Player player;
     private Socket s;
-    private Game game;
+    private Game g;
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
-    public ClientHandler(Serveur ser, Game g, int id, Socket soc) throws IOException{
+    public ClientHandler(Serveur ser, Player p, Socket soc) throws IOException{
         this.serv = ser;
-        this.playerId = id;
+        this.player = p;
         this.s = soc;
         out = new ObjectOutputStream(s.getOutputStream());
         in = new ObjectInputStream(s.getInputStream());
-        out.writeObject(playerId);
-        out.flush();
     }
 
+    public Player getPlayer(){
+        return this.player;
+    }
+    public void setPlayer(Player p){
+        this.player = p;
+    }
+    
     public void run(){
         try{
             while(true){
                 String action = (String) in.readObject();
                 switch (action) {
-                    case "RIGHT":
-                        game.movePlayerRight(playerId);
-                        break;
-                    case "LEFT":
-                        game.movePlayerLeft(playerId);
-                        break;
-                    case "DOWN":
-                        game.movePlayerDown(playerId);
-                        break;
-                    case "UP":
-                        game.movePlayerUp(playerId);
-                        break;
-                    case "DIG":
-                        game.dig(playerId);
-                        break;
                     case "LOAD":
                         serv.loadGame();
                         break;
                     case "RESTART":
                         serv.restartGame();
                         break;
+                    default:
+                        serv.movePlayer(player, action);
                 }
             }
         }
         catch(Exception e){
-            System.out.println("Client deconnecté" + playerId);
+            System.out.println("Client deconnecté");
         }
     }
 
     public void sendGame(Game game){
         try{
-            this.game = game;
+            this.g = game;
             out.reset();
             out.writeObject(game);
             out.flush();

@@ -60,7 +60,6 @@ public class Main extends ApplicationAdapter {
         tickDep = 0;
         try {
         client = new Client("localhost",8080);
-        playerId = client.getId();
         } catch (IOException e) {
             e.printStackTrace();
             client = null;
@@ -91,7 +90,6 @@ public class Main extends ApplicationAdapter {
         Game newGame = client.getGame();
         if (newGame != null) {
             g = newGame;
-            g.getPlay().get(0).setHp(0);
         }
         else{
             batch.begin();

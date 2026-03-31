@@ -4,32 +4,23 @@ import java.io.*;
 import java.net.*;
 
 import com.loderunner.project.engine.Game;
+import com.loderunner.project.entity.Player;
 
 public class Client {
     private Socket socket;
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private volatile Game g;
-    private int playerId;
 
     public Client(String host,int port) throws IOException {
         socket = new Socket(host, port);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
-        try{
-            playerId = (int) in.readObject();
-            System.out.println("joueur" + playerId);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
         listen();
     }
    
     public Game getGame(){
         return g;
-    }
-    public int getId(){
-        return playerId;
     }
 
     public void listen(){

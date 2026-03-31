@@ -24,16 +24,12 @@ public class Game implements Serializable{
         this.tre = new ArrayList<>();
     }
 
-    public Game(int nbrTreasure, int nbrPlayer){
+    public Game(int nbrTreasure){
         this.score = 0;
         this.maze = Maze.generation();
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
         this.tre = new ArrayList<>();
-        while(play.size()<nbrPlayer){
-            Player p = new Player(this.getMaze().getExit(), 1);
-            this.play.add(p);
-        }
         for(int i = 1 ; i<5 ; i++){
             Enemy e = new EnemyNormal(this.maze.getExit(), 0); // Pour l'instant on va faire apparaitre 5 ennemy normal parce que je n'ai pas comment faire pour en importer plusieur de chaque 
             this.ene.add(e);
@@ -108,22 +104,19 @@ public class Game implements Serializable{
         return false;
     }
 
-    public void movePlayerRight(int ind){
-        Player player = play.get(ind);
+    public void movePlayerRight(Player player){
         if (maze.getTile(player.getX()+1, player.getY()).getType()!=3 && (maze.getTile(player.getX()+1, player.getY()).getType()!=1 || !maze.getTile(player.getX()+1, player.getY()).getState()) && !isPlayer(player.getX()+1, player.getY(), player)){
             player.right();
         }
     }
 
-    public void movePlayerLeft(int ind){
-        Player player = play.get(ind);
-        if (maze.getTile(player.getX()-1, player.getY()).getType()!=3 && (maze.getTile(player.getX()+1, player.getY()).getType()!=1 || !maze.getTile(player.getX()+1, player.getY()).getState()) && !isPlayer(player.getX()-1, player.getY(), player)){
+    public void movePlayerLeft(Player player){
+        if (maze.getTile(player.getX()-1, player.getY()).getType()!=3 && (maze.getTile(player.getX()+1, player.getY()).getType()!=1 || !maze.getTile(player.getX()-1, player.getY()).getState()) && !isPlayer(player.getX()-1, player.getY(), player)){
             player.left();
         }
     }
 
-    public void movePlayerUp(int ind){
-        Player player = play.get(ind);
+    public void movePlayerUp(Player player){
         if (maze.getTile(player.getX(), player.getY()).getType()==2 && !isPlayer(player.getX(), player.getY()-1, player)){
             if(player.getY()-1 != 0 || maze.getCanEscape()){
                 player.up();
@@ -131,8 +124,7 @@ public class Game implements Serializable{
         }
     }
     
-    public void movePlayerDown(int ind){
-        Player player = play.get(ind);
+    public void movePlayerDown(Player player){
         if (maze.getTile(player.getX(), player.getY()+1).getType()==2 && !isPlayer(player.getX(), player.getY()+1, player)){
             player.down();
         }
@@ -154,8 +146,7 @@ public class Game implements Serializable{
         }
     }
 
-    public void dig(int ind){
-        Player player = play.get(ind);
+    public void dig(Player player){
         int digX = player.getX() ;
         int digY = player.getY()+1;
         if (player.getDirection() == Direction.RIGHT){
@@ -166,7 +157,7 @@ public class Game implements Serializable{
         Tiles tile = maze.getTile(digX, digY);
         if(tile.getType()==1 && digX != maze.getWidth()-1 && digX != 0){
             tile.setState(false);
-            tile.setRespawn(100);
+            tile.setRespawn(50);
         }
     }
 
@@ -186,7 +177,7 @@ public class Game implements Serializable{
             if(maze.getTile(c.getX(), c.getY()).getType()==1 && maze.getTile(c.getX(), c.getY()).getState()==false && e.getFree()){
                 this.score += 10;
                 e.setFree(false);
-                e.setTimeToRespawn(25);
+                e.setTimeToRespawn(10);
                 return;
             }
         }
@@ -335,7 +326,7 @@ public class Game implements Serializable{
     }
 
     public Game nextLevel(){
-        return new Game(5, 2);
+        return new Game(5);
     }
 
     public void saveToFile(){
