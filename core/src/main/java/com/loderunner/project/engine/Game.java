@@ -95,38 +95,44 @@ public class Game implements Serializable{
         canEscape();
     }
 
-    public boolean isPlayer(int x, int y, Player p){
+    public boolean isPlayer(int x, int y){
         for (Player pl : play){
-            if(pl != p && pl.getX() == x && pl.getY() == y){
+            if(pl.getX() == x && pl.getY() == y){
                 return true;
             }
         }
         return false;
     }
 
-    public void movePlayerRight(Player player){
-        if (maze.getTile(player.getX()+1, player.getY()).getType()!=3 && (maze.getTile(player.getX()+1, player.getY()).getType()!=1 || !maze.getTile(player.getX()+1, player.getY()).getState()) && !isPlayer(player.getX()+1, player.getY(), player)){
-            player.right();
+    public boolean isWall(int x, int y){
+        Tiles t = maze.getTile(x, y);
+        if((t.getType() == 1 && t.getState() == true) || t.getType() == 3){
+            return true;
+        }return false;
+    }
+    public void moveCharacterRight(Character character){
+        if (!isWall(character.getX()+1, character.getY()) && (!isPlayer(character.getX()+1, character.getY()) || character instanceof Enemy)){
+            character.right();
         }
     }
 
-    public void movePlayerLeft(Player player){
-        if (maze.getTile(player.getX()-1, player.getY()).getType()!=3 && (maze.getTile(player.getX()+1, player.getY()).getType()!=1 || !maze.getTile(player.getX()-1, player.getY()).getState()) && !isPlayer(player.getX()-1, player.getY(), player)){
-            player.left();
+    public void moveCharacterLeft(Character character){
+        if (!isWall(character.getX()-1, character.getY()) && (!isPlayer(character.getX()-1, character.getY()) || character instanceof Enemy)){
+            character.left();
         }
     }
 
-    public void movePlayerUp(Player player){
-        if (maze.getTile(player.getX(), player.getY()).getType()==2 && !isPlayer(player.getX(), player.getY()-1, player)){
-            if(player.getY()-1 != 0 || maze.getCanEscape()){
-                player.up();
+    public void moveCharacterUp(Character character){
+        if (maze.getTile(character.getX(), character.getY()).getType()==2 && (!isPlayer(character.getX(), character.getY()-1) || character instanceof Enemy)){
+            if(character instanceof Player && maze.getCanEscape() || character.getY()-1 != 0){
+                character.up();
             }
         }
     }
     
-    public void movePlayerDown(Player player){
-        if (maze.getTile(player.getX(), player.getY()+1).getType()==2 && !isPlayer(player.getX(), player.getY()+1, player)){
-            player.down();
+    public void moveCharacterDown(Character character){
+        if (maze.getTile(character.getX(), character.getY()+1).getType()==2 && (!isPlayer(character.getX(), character.getY()+1) || character instanceof Enemy)){
+            character.down();
         }
     }
 
@@ -203,7 +209,7 @@ public class Game implements Serializable{
 
     public void movementEnemy(){
         for(Enemy e : this.ene){
-            e.Mouvement(this);
+            e.mouvement(this);
         }
     }
 
@@ -271,7 +277,7 @@ public class Game implements Serializable{
                             p.loseHp();
                             if(!p.playerDead()){
                                 p.setInvin(true);
-                                p.setTimeInve(10);
+                                p.setTimeInve(20);
                                 p.respawn(maze.getExit(), 1);
                             }
                         }

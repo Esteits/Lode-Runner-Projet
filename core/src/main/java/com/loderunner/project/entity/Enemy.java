@@ -44,5 +44,5 @@ public abstract class Enemy extends Character implements Serializable{
         this.free = true;
     }
 
-    public abstract Direction Mouvement(Game game);
+    public abstract Direction mouvement(Game game);
 }

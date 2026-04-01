@@ -29,7 +29,7 @@ public class EnemyNormal extends Enemy implements Serializable{
     }
 
     @Override
-    public Direction Mouvement(Game game) {
+    public Direction mouvement(Game game) {
         Player p = playClose(game);
 
         if(p.getY() > this.y && game.getMaze().getTile(x, y-1).getType() == 2){

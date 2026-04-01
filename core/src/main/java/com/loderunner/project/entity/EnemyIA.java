@@ -12,7 +12,7 @@ public class EnemyIA extends Enemy implements Serializable {
     }
 
     @Override
-    public Direction Mouvement(Game game) {
+    public Direction mouvement(Game game) {
         
         return Direction.NONE; 
     }

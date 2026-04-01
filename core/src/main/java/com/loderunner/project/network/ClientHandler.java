@@ -3,29 +3,29 @@ package com.loderunner.project.network;
 import java.io.*;
 import java.net.*;
 import com.loderunner.project.engine.Game;
-import com.loderunner.project.entity.Player;
+import com.loderunner.project.entity.Character;
 
 public class ClientHandler extends Thread{
     private Serveur serv;
-    private Player player;
+    private Character c;
     private Socket s;
     private Game g;
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
-    public ClientHandler(Serveur ser, Player p, Socket soc) throws IOException{
+    public ClientHandler(Serveur ser, Character c, Socket soc) throws IOException{
         this.serv = ser;
-        this.player = p;
+        this.c = c;
         this.s = soc;
         out = new ObjectOutputStream(s.getOutputStream());
         in = new ObjectInputStream(s.getInputStream());
     }
 
-    public Player getPlayer(){
-        return this.player;
+    public Character getCharacter(){
+        return this.c;
     }
-    public void setPlayer(Player p){
-        this.player = p;
+    public void setCharacter(Character c){
+        this.c = c;
     }
     
     public void run(){
@@ -40,8 +40,8 @@ public class ClientHandler extends Thread{
                         serv.restartGame();
                         break;
                     default:
-                        serv.movePlayer(player, action);
-                }
+                        serv.moveCharacter(c, action);
+                }  
             }
         }
         catch(Exception e){
