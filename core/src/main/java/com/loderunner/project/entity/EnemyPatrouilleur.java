@@ -1,10 +1,9 @@
 package com.loderunner.project.entity;
-import java.io.Serializable;
 
 import com.loderunner.project.engine.Game;
 import com.loderunner.project.entity.Character.Direction;
 
-public class EnemyPatrouilleur extends Enemy implements Serializable{
+public class EnemyPatrouilleur extends Enemy{
 
     public enum Etat {
         PATROUILLE, 

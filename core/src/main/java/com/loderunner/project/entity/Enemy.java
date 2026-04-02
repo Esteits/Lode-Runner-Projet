@@ -1,9 +1,8 @@
 package com.loderunner.project.entity;
-import java.io.Serializable;
 
 import com.loderunner.project.engine.Game;
 
-public abstract class Enemy extends Character implements Serializable{
+public abstract class Enemy extends Character{
     private boolean state; //true = joue false = desactiver
     private boolean free ;  //true = normal false = pieger
     private int timetorespawn;

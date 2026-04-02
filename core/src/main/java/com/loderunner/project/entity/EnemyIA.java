@@ -1,11 +1,9 @@
 package com.loderunner.project.entity;
 import com.loderunner.project.entity.Character.Direction;
 
-import java.io.Serializable;
-
 import com.loderunner.project.engine.Game;
 
-public class EnemyIA extends Enemy implements Serializable {
+public class EnemyIA extends Enemy{
 
     public EnemyIA(int x, int y) {
         super(x, y);

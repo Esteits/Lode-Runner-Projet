@@ -24,8 +24,8 @@ public class Game implements Serializable{
         this.tre = new ArrayList<>();
     }
 
-    public Game(int nbrTreasure){
-        this.score = 0;
+    public Game(int nbrTreasure, int score){
+        this.score = score;
         this.maze = Maze.generation();
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
@@ -68,7 +68,7 @@ public class Game implements Serializable{
     public List<Enemy> getEne(){
         return this.ene;
     }
-
+    
     public List<Treasure> getTre(){
         return this.tre;
     }
@@ -331,8 +331,8 @@ public class Game implements Serializable{
         return true;
     }
 
-    public Game nextLevel(){
-        return new Game(5);
+    public Game nextLevel(int score){
+        return new Game(5, score);
     }
 
     public void saveToFile(){

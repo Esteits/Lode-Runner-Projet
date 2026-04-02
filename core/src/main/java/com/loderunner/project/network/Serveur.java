@@ -14,7 +14,7 @@ public class Serveur {
     private int port;
     private Game g;
     private List<ClientHandler> clients = Collections.synchronizedList(new ArrayList<>());
-    private List<Player> play = new ArrayList<>();
+    private List<Character> chara = new ArrayList<>();
     private boolean mode = false; //true = coop, false = adversaire
 
     Serveur(Game g, int p){
@@ -22,7 +22,7 @@ public class Serveur {
         this.port = p;
     }
     public static void main(String[] args) throws Exception{
-        Game g = new Game(5);
+        Game g = new Game(5, 0);
         Serveur serv = new Serveur(g, 8080);
         serv.start();
     }
@@ -54,7 +54,8 @@ public class Serveur {
                 }
             }
         }).start();
-        gameLoop();
+    gameLoop();
+    s.close();
     }
 
     public void gameLoop(){
@@ -66,14 +67,7 @@ public class Serveur {
             }
             synchronized(this){
                 g.sec();
-                if(g.win()){
-                    int sco = g.getScore();
-                    addAllPlayer();
-                    this.g = g.nextLevel();
-                    refreshPlayer();
-                    g.setScore(sco + 1000);
-                    respawnAllCharacter();
-                }
+                avancedToNextLevel();
             }
             synchronized(clients){
                 for(ClientHandler ch : clients){
@@ -106,8 +100,14 @@ public class Serveur {
         }
     }
 
-    public void moveEnemy(Enemy e, String action){
-        
+    public void avancedToNextLevel(){
+        if(g.win()){
+            int sco = g.getScore();
+            addAllCharacter();
+            this.g = g.nextLevel(sco + 1000);
+            refreshCharacter();
+            respawnAllCharacter();
+        }
     }
 
     public void loadGame(){
@@ -117,22 +117,25 @@ public class Serveur {
         }
     }
 
-    public void addAllPlayer(){
-        this.play.clear();
+    public void addAllCharacter(){
+        this.chara.clear();
         for(ClientHandler ch : clients) {
-            if(ch.getCharacter() instanceof Player){
-                Player p = (Player) ch.getCharacter();
-                this.play.add(p);  
-            }
-        } 
-    }
+            this.chara.add(ch.getCharacter());  
+        }
+    } 
 
-    public void refreshPlayer(){
-        for(int i = 0 ; i < this.play.size() ; i++) {
+    public void refreshCharacter(){
+        for(int i = 0 ; i < this.chara.size() ; i++){
             ClientHandler ch = this.clients.get(i);
-            Player p = this.play.get(i);
-            ch.setCharacter(p);
-            this.g.addPlayer(p);
+            Character c = this.chara.get(i);
+            ch.setCharacter(c);
+            if(c instanceof Player){
+                Player p = (Player) c;
+                this.g.addPlayer(p);
+            }else{
+                Enemy e = (Enemy) c;
+                this.g.addEnemy(e);
+            }
         }
     }
 
@@ -140,16 +143,21 @@ public class Serveur {
         for(ClientHandler ch : clients){
             if(ch.getCharacter() instanceof Player){
                 ch.getCharacter().respawn(g.getMaze().getExit(), 1);
+                Player p = (Player) ch.getCharacter();
+                p.setHp(5);
             }else{
                 ch.getCharacter().respawn(1, g.getMaze().getHeight()-2);
+                Enemy e = (Enemy) ch.getCharacter();
+                e.setFree(true);
+                e.setState(true);
             }
         }
     }
 
     public void restartGame(){
-        addAllPlayer();
-        this.g = new Game(5);
-        refreshPlayer();
+        addAllCharacter();
+        this.g = new Game(5, 0);
+        refreshCharacter();
         respawnAllCharacter();
     }
 }

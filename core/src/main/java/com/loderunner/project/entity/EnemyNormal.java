@@ -2,10 +2,9 @@ package com.loderunner.project.entity;
 import com.loderunner.project.entity.Character.Direction;
 import com.loderunner.project.engine.Game;
 
-import java.io.Serializable;
 import java.lang.Math;
 
-public class EnemyNormal extends Enemy implements Serializable{
+public class EnemyNormal extends Enemy{
     Direction d = Direction.NONE;
 
     public EnemyNormal(int x, int y) {

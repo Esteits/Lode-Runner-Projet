@@ -1,7 +1,6 @@
 package com.loderunner.project.entity;
-import java.io.Serializable;
 
-public class Player extends Character implements Serializable{
+public class Player extends Character{
     private int hp ;
     private boolean invincible;
     private int timeInv;

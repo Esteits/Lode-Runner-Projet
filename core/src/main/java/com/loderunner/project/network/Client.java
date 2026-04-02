@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.*;
 
 import com.loderunner.project.engine.Game;
-import com.loderunner.project.entity.Player;
 
 public class Client {
     private Socket socket;
