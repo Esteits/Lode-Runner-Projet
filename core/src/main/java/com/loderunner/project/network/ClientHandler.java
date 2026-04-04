@@ -33,6 +33,9 @@ public class ClientHandler extends Thread{
             while(true){
                 String action = (String) in.readObject();
                 switch (action) {
+                    case "SAVE":
+                        serv.saveGame();
+                        break;
                     case "LOAD":
                         serv.loadGame();
                         break;

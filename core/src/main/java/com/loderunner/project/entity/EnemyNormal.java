@@ -11,6 +11,13 @@ public class EnemyNormal extends Enemy{
         super(x, y);
     }
 
+    public EnemyNormal(int x, int y, boolean free, int time, boolean state){
+        super(x, y);
+        setFree(free);
+        setTimeToRespawn(time);
+        setState(state);
+    }
+
     public Player playClose(Game game){
         Player target = game.getPlay().get(0);
         int xEne = this.getX();

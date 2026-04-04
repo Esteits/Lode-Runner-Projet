@@ -9,6 +9,13 @@ public class EnemyIA extends Enemy{
         super(x, y);
     }
 
+    public EnemyIA(int x, int y, boolean free, int time, boolean state){
+        super(x, y);
+        setFree(free);
+        setTimeToRespawn(time);
+        setState(state);
+    }
+    
     @Override
     public Direction mouvement(Game game) {
         

@@ -19,6 +19,13 @@ public class EnemyPatrouilleur extends Enemy{
         this.direction = Direction.RIGHT;
     }
 
+    public EnemyPatrouilleur(int x, int y, boolean free, int time, boolean state){
+        super(x, y);
+        setFree(free);
+        setTimeToRespawn(time);
+        setState(state);
+    }
+
     @Override
     public Direction mouvement(Game game) {        
         return Direction.NONE; 

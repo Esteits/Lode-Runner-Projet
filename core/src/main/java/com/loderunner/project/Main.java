@@ -207,6 +207,9 @@ public class Main extends ApplicationAdapter {
     }
 
     public void inputPlayer(int ind){
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ALT_RIGHT)){
+            client.action("SAVE");
+        }
         if(Gdx.input.isKeyJustPressed(Input.Keys.ALT_LEFT)){
             client.action("LOAD");;
         }
