@@ -1,47 +1,116 @@
 package com.loderunner.project.entity;
+
 import java.io.Serializable;
 
 import com.loderunner.project.engine.Game;
 import com.loderunner.project.entity.Character.Direction;
+import com.loderunner.project.map.Tiles;
 
-public class EnemyPatrouilleur extends Enemy implements Serializable{
+public class EnemyPatrouilleur extends Enemy implements Serializable {
 
-    public enum Etat {
-        PATROUILLE, 
-        POURSUIT   
-    }
+    public enum Etat { PATROUILLE, POURSUIT }
 
     private Etat etat;
-    private Direction direction;  // Je te cache pas je sais pas pk on doit mettre ca 
+    private Direction directionActuelle; 
+    private int Tick;
 
     public EnemyPatrouilleur(int x, int y) {
         super(x, y);
         this.etat = Etat.PATROUILLE;
-        this.direction = Direction.RIGHT;
+        this.directionActuelle = Direction.RIGHT; 
+        this.Tick = 0;
     }
 
     @Override
-    public Direction mouvement(Game game) {        
-        return Direction.NONE; 
+    public Direction mouvement(Game game) {   
+           
+        this.Tick += 3;
+        if (this.Tick < 10) {
+            return Direction.NONE; 
+        }
+        this.Tick -= 10;
+
+        Player cible = Search_Player(game);
+        if (cible != null) {
+            Mode_Poursuite(cible);
+        } else {
+            Mode_Patrouille(game);
+        }
+        return this.directionActuelle; 
     }
 
-    public Etat getPEtat() 
-    {
-        return etat; 
+    private void Mode_Poursuite(Player cible) {
+        this.etat = Etat.POURSUIT;
+        if (cible.getX() > this.x) {
+            this.directionActuelle = Direction.RIGHT;
+        } else if (cible.getX() < this.x) {
+            this.directionActuelle = Direction.LEFT;
+        }
     }
 
-    public void setPEtat(Etat etat) 
-    { 
-        this.etat = etat; 
+    private void Mode_Patrouille(Game game) {
+        this.etat = Etat.PATROUILLE;
+        if (obstacle(game) || videDevant(game)) {
+            Demi_Tour();
+        }
     }
 
-    public Direction getPDirection() 
-    { 
-        return direction; 
+    private void Demi_Tour() {
+        if (this.directionActuelle == Direction.RIGHT) {
+            this.directionActuelle = Direction.LEFT;
+        } else {
+            this.directionActuelle = Direction.RIGHT;
+        }
     }
 
-    public void setPDirection(Direction direction) 
-    { 
-        this.direction = direction; 
+    private boolean obstacle(Game game) {
+        int caseDevantX = Next_Case_X();
+        return game.isWall(caseDevantX, this.y);
     }
+
+    private boolean videDevant(Game game) {
+        int caseDevantX = Next_Case_X();
+        if (caseDevantX < 0 || caseDevantX >= game.getMaze().getWidth()) { // bord de map 
+            return true; 
+        }
+        Tiles caseEnDessous = game.getMaze().getTile(caseDevantX, this.y + 1);
+        boolean estDuVide = (caseEnDessous.getType() == 0);
+        boolean estUneEchelle = (game.getMaze().getTile(caseDevantX, this.y).getType() == 2);
+        return estDuVide && !(estUneEchelle);
+    }
+
+    private int Next_Case_X() {
+        if (this.directionActuelle == Direction.RIGHT) {
+            return this.x + 1;
+        } else {
+            return this.x - 1;
+        }
+    }
+
+    private Player Search_Player(Game game) {
+        for (Player joueur : game.getPlay()) {
+            if (joueur.getY() == this.y && !joueur.playerDead()) {
+                if (aucunMurEntre(this.x, joueur.getX(), this.y, game)) {
+                    return joueur;
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean aucunMurEntre(int x1, int x2, int y, Game game) {
+        int debut = Math.min(x1, x2);
+        int fin = Math.max(x1, x2);
+        for (int x = debut; x <= fin; x++) {
+            if (game.isWall(x, y)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public Etat getPEtat() { return etat; }
+    public void setPEtat(Etat etat) { this.etat = etat; }
+    public Direction getPDirection() { return directionActuelle; }
+    public void setPDirection(Direction directionActuelle) { this.directionActuelle = directionActuelle; }
 }

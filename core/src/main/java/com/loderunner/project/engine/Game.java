@@ -1,13 +1,24 @@
 package com.loderunner.project.engine;
 
-import com.loderunner.project.map.Maze;
-import com.loderunner.project.map.Tiles;
-import com.loderunner.project.entity.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.loderunner.project.entity.Character;
 import com.loderunner.project.entity.Character.Direction;
-
-import java.io.*;
-import java.util.*;
+import com.loderunner.project.entity.Enemy;
+import com.loderunner.project.entity.EnemyIA;
+import com.loderunner.project.entity.EnemyNormal;
+import com.loderunner.project.entity.EnemyPatrouilleur;
+import com.loderunner.project.entity.Player;
+import com.loderunner.project.entity.Treasure;
+import com.loderunner.project.map.Maze;
+import com.loderunner.project.map.Tiles;
 
 public class Game implements Serializable{
     private int score;
@@ -30,10 +41,40 @@ public class Game implements Serializable{
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
         this.tre = new ArrayList<>();
-        for(int i = 1 ; i<5 ; i++){
-            Enemy e = new EnemyNormal(this.maze.getExit(), 0); // Pour l'instant on va faire apparaitre 5 ennemy normal parce que je n'ai pas comment faire pour en importer plusieur de chaque 
-            this.ene.add(e);
+
+// --- FAIT PAR IA MAIS C'ETAIT JUSTE POUR TESTER LES IA DONC TU PEUT SUPRRIMER ---
+        int typesCrees = 0; 
+        while (typesCrees < 3) {
+            int randomX = (int)(Math.random() * (this.maze.getWidth() - 2)) + 1;
+            int randomY = (int)(Math.random() * (this.maze.getHeight() - 2)) + 1;
+            if (this.maze.getTile(randomX, randomY).getType() == 0 && this.maze.getTile(randomX, randomY + 1).getType() == 1) {
+                boolean caseOccupee = false;
+                for (int i = 0; i < this.ene.size(); i++) {
+                    Enemy e = this.ene.get(i);
+                    if (e.getX() == randomX && e.getY() == randomY) {
+                        caseOccupee = true;
+                        break;}
+                }
+                if (caseOccupee == false) {
+                    Enemy nouvelEnnemi = null;
+                    if (typesCrees == 0) {
+                        nouvelEnnemi = new EnemyNormal(randomX, randomY);
+                    } 
+                    else if (typesCrees == 1) {
+                        nouvelEnnemi = new EnemyIA(randomX, randomY);
+                    } 
+                    else if (typesCrees == 2) {
+                        nouvelEnnemi = new EnemyPatrouilleur(randomX, randomY);
+                    }
+                    nouvelEnnemi.setState(true); // On l'active
+                    this.ene.add(nouvelEnnemi);
+                    typesCrees++; 
+                }
+            }
         }
+// --------------------------------
+
+
         while(tre.size()<nbrTreasure){
             Treasure t = new Treasure((int)(Math.random() * (this.maze.getWidth() - 1)) , (int)(Math.random() * (this.maze.getHeight() - 1)));
             if (maze.getTile(t.getX(), t.getY() + 1).getType()==1){
@@ -87,6 +128,7 @@ public class Game implements Serializable{
     
     public void sec(){
         gravity();
+        movementEnemy();
         playerEnemyCol();
         playerTreasureCol();
         decrementPlayerInvTimer();
@@ -209,7 +251,23 @@ public class Game implements Serializable{
 
     public void movementEnemy(){
         for(Enemy e : this.ene){
-            e.mouvement(this);
+            if (e.getFree() && e.getState()) {
+                
+                Direction intention = e.mouvement(this); 
+                
+                if (intention == Direction.RIGHT) {
+                    moveCharacterRight(e);
+                } 
+                else if (intention == Direction.LEFT) {
+                    moveCharacterLeft(e);
+                } 
+                else if (intention == Direction.UP) {
+                    moveCharacterUp(e);
+                } 
+                else if (intention == Direction.DOWN) {
+                    moveCharacterDown(e);
+                }
+            }
         }
     }
 
