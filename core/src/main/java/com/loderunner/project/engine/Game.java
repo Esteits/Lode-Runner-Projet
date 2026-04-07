@@ -15,6 +15,7 @@ import com.loderunner.project.entity.Enemy;
 import com.loderunner.project.entity.EnemyIA;
 import com.loderunner.project.entity.EnemyNormal;
 import com.loderunner.project.entity.EnemyPatrouilleur;
+import com.loderunner.project.entity.EnemyPlayer;
 import com.loderunner.project.entity.Player;
 import com.loderunner.project.entity.Treasure;
 import com.loderunner.project.map.Maze;
@@ -35,46 +36,12 @@ public class Game implements Serializable{
         this.tre = new ArrayList<>();
     }
 
-    public Game(int nbrTreasure){
-        this.score = 0;
+    public Game(int nbrTreasure, int score){
+        this.score = score;
         this.maze = Maze.generation();
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
         this.tre = new ArrayList<>();
-
-// --- FAIT PAR IA MAIS C'ETAIT JUSTE POUR TESTER LES IA DONC TU PEUT SUPRRIMER ---
-        int typesCrees = 0; 
-        while (typesCrees < 3) {
-            int randomX = (int)(Math.random() * (this.maze.getWidth() - 2)) + 1;
-            int randomY = (int)(Math.random() * (this.maze.getHeight() - 2)) + 1;
-            if (this.maze.getTile(randomX, randomY).getType() == 0 && this.maze.getTile(randomX, randomY + 1).getType() == 1) {
-                boolean caseOccupee = false;
-                for (int i = 0; i < this.ene.size(); i++) {
-                    Enemy e = this.ene.get(i);
-                    if (e.getX() == randomX && e.getY() == randomY) {
-                        caseOccupee = true;
-                        break;}
-                }
-                if (caseOccupee == false) {
-                    Enemy nouvelEnnemi = null;
-                    if (typesCrees == 0) {
-                        nouvelEnnemi = new EnemyNormal(randomX, randomY);
-                    } 
-                    else if (typesCrees == 1) {
-                        nouvelEnnemi = new EnemyIA(randomX, randomY);
-                    } 
-                    else if (typesCrees == 2) {
-                        nouvelEnnemi = new EnemyPatrouilleur(randomX, randomY);
-                    }
-                    nouvelEnnemi.setState(true); // On l'active
-                    this.ene.add(nouvelEnnemi);
-                    typesCrees++; 
-                }
-            }
-        }
-// --------------------------------
-
-
         while(tre.size()<nbrTreasure){
             Treasure t = new Treasure((int)(Math.random() * (this.maze.getWidth() - 1)) , (int)(Math.random() * (this.maze.getHeight() - 1)));
             if (maze.getTile(t.getX(), t.getY() + 1).getType()==1){
@@ -109,7 +76,7 @@ public class Game implements Serializable{
     public List<Enemy> getEne(){
         return this.ene;
     }
-
+    
     public List<Treasure> getTre(){
         return this.tre;
     }
@@ -389,13 +356,13 @@ public class Game implements Serializable{
         return true;
     }
 
-    public Game nextLevel(){
-        return new Game(5);
+    public Game nextLevel(int score){
+        return new Game(5, score);
     }
 
     public void saveToFile(){
         try (BufferedWriter b = new BufferedWriter(new FileWriter("level.txt"))){
-            b.write(maze.getWidth() + " " + maze.getHeight() + " " + maze.getExit());
+            b.write(maze.getWidth() + " " + maze.getHeight() + " " + maze.getExit() + " " + this.getScore());
             b.newLine();
 
             for(int y = 0 ; y < maze.getHeight() ; y++){
@@ -437,7 +404,20 @@ public class Game implements Serializable{
             b.write("Ene");
             b.newLine();
             for (Enemy e: ene){
-                b.write(e.getX() + " " + e.getY() + " " + e.getFree() + " " + e.getTimeToRespawn() + " " + e.getState());
+                if(e instanceof EnemyNormal){
+                    b.write(e.getX() + " " + e.getY() + " " + e.getFree() + " " + e.getTimeToRespawn() + " " + e.getState() + " " + 1);
+                }
+                if(e instanceof EnemyPatrouilleur){
+                    b.write(e.getX() + " " + e.getY() + " " + e.getFree() + " " + e.getTimeToRespawn() + " " + e.getState() + " " + 2);
+                }
+                if(e instanceof EnemyIA){
+                    b.write(e.getX() + " " + e.getY() + " " + e.getFree() + " " + e.getTimeToRespawn() + " " + e.getState() + " " + 3);
+                }
+                if(e instanceof EnemyPlayer){
+                    b.write(e.getX() + " " + e.getY() + " " + e.getFree() + " " + e.getTimeToRespawn() + " " + e.getState() + " " + 4);
+                }else{
+                    b.write(e.getX() + " " + e.getY() + " " + e.getFree() + " " + e.getTimeToRespawn() + " " + e.getState() + " " + 1);
+                }
                 b.newLine();
             }
 
@@ -453,13 +433,15 @@ public class Game implements Serializable{
         }
     }
 
-    public void loadFromFile(){
+    public Game loadFromFile(){
+        Game g = new Game();
         try (BufferedReader b = new BufferedReader(new FileReader("level.txt"))){
             String[] dims = b.readLine().split(" ");
-            this.maze = new Maze(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
-            for(int y = 0 ; y < maze.getHeight() ; y++){
+            g.maze = new Maze(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
+            g.score = Integer.parseInt(dims[3]);
+            for(int y = 0 ; y < g.maze.getHeight() ; y++){
                 String line = b.readLine();
-                for(int x = 0 ; x < maze.getWidth() ; x++){
+                for(int x = 0 ; x < g.maze.getWidth() ; x++){
                     int type;
                     char c = line.charAt(x);
                         switch (c) {
@@ -482,45 +464,58 @@ public class Game implements Serializable{
                             default:
                                 type = 0 ;
                         }
-                    maze.getTile(x, y).setType(type);
+                    g.maze.getTile(x, y).setType(type);
                 }
             }
 
             b.readLine();
-            this.play = new ArrayList<>();
+            g.play = new ArrayList<>();
             String line = b.readLine();
             while(!line.contentEquals("Ene")){
                 String[] caractereP = line.split(" ");
                 Player p = new Player(Integer.parseInt(caractereP[0]), Integer.parseInt(caractereP[1]));
                 p.setHp(Integer.parseInt(caractereP[2]));
-                play.add(p);
+                g.addPlayer(p);
                 line = b.readLine();
             }
 
-            this.ene = new ArrayList<>();
+            // Tu met a Ennemy 5 paramètre alors qu'il en en prend que 2. Donc je ne sais pas quoi te dire 
+            // Surtout que EnemyNormal/Patrouilleur et IA héritent de Enemy.java, donc avec "setters" on peut modifier leur état (setFree, setTimeToRespawn, setState).
+            /* 
+            g.ene = new ArrayList<>();
             line = b.readLine();
             while(!line.contentEquals("Tre")){
                 String[] caractereE = line.split(" ");
-                Enemy e = new EnemyNormal(Integer.parseInt(caractereE[0]), Integer.parseInt(caractereE[1]));
-                e.setFree(Boolean.parseBoolean(caractereE[2]));
-                e.setTimeToRespawn(Integer.parseInt(caractereE[3]));
-                e.setState(Boolean.parseBoolean(caractereE[4]));
-                ene.add(e);
+                if(Integer.parseInt(caractereE[5]) == 2){
+                    EnemyPatrouilleur e = new EnemyPatrouilleur(Integer.parseInt(caractereE[0]), Integer.parseInt(caractereE[1]), Boolean.parseBoolean(caractereE[2]), Integer.parseInt(caractereE[3]), Boolean.parseBoolean(caractereE[4]));
+                    g.addEnemy(e);
+                }else if(Integer.parseInt(caractereE[5]) == 3){
+                    EnemyIA e = new EnemyIA(Integer.parseInt(caractereE[0]), Integer.parseInt(caractereE[1]), Boolean.parseBoolean(caractereE[2]), Integer.parseInt(caractereE[3]), Boolean.parseBoolean(caractereE[4]));
+                    g.addEnemy(e);
+                }else if(Integer.parseInt(caractereE[5]) == 4){
+                    EnemyPlayer e = new EnemyPlayer(Integer.parseInt(caractereE[0]), Integer.parseInt(caractereE[1]), Boolean.parseBoolean(caractereE[2]), Integer.parseInt(caractereE[3]), Boolean.parseBoolean(caractereE[4]));
+                    g.addEnemy(e);
+                }else{
+                    EnemyNormal e = new EnemyNormal(Integer.parseInt(caractereE[0]), Integer.parseInt(caractereE[1]), Boolean.parseBoolean(caractereE[2]), Integer.parseInt(caractereE[3]), Boolean.parseBoolean(caractereE[4]));
+                    g.addEnemy(e);
+                }
                 line = b.readLine();
             }
+            */
 
-            this.tre = new ArrayList<>();
+            g.tre = new ArrayList<>();
             line = b.readLine();
             while(line != null){
                 String[] caractereT = line.split(" ");
                 Treasure t = new Treasure(Integer.parseInt(caractereT[0]), Integer.parseInt(caractereT[1]));
                 t.setCollect(Boolean.parseBoolean(caractereT[2]));
-                tre.add(t);
+                g.addTreasure(t);
                 line = b.readLine();
             }
         }
         catch(IOException e){
             e.printStackTrace();
         }
+        return g;
     }
 }

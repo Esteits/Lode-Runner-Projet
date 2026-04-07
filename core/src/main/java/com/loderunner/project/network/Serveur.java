@@ -17,15 +17,16 @@ public class Serveur {
     private int port;
     private Game g;
     private List<ClientHandler> clients = Collections.synchronizedList(new ArrayList<>());
-    private List<Player> play = new ArrayList<>();
+    private List<Character> chara = new ArrayList<>();
     private boolean mode = false; //true = coop, false = adversaire
+    private int tick;
 
     Serveur(Game g, int p){
         this.g = g;
         this.port = p;
     }
     public static void main(String[] args) throws Exception{
-        Game g = new Game(5);
+        Game g = new Game(5, 0);
         Serveur serv = new Serveur(g, 8080);
         serv.start();
     }
@@ -38,7 +39,7 @@ public class Serveur {
             while(true) {
                 try {
                     Socket soc = s.accept();
-                    if(!mode && this.clients.size()>0){
+                    if(!mode && this.clients.size() > 0){
                         Enemy e = new EnemyPlayer(1, this.g.getMaze().getHeight()-2) ;
                         this.g.addEnemy(e);
                         ClientHandler client = new ClientHandler(this, e, soc);
@@ -57,7 +58,8 @@ public class Serveur {
                 }
             }
         }).start();
-        gameLoop();
+    gameLoop();
+    s.close();
     }
 
     public void gameLoop(){
@@ -68,15 +70,12 @@ public class Serveur {
                 e.printStackTrace();
             }
             synchronized(this){
-                g.sec();
-                if(g.win()){
-                    int sco = g.getScore();
-                    addAllPlayer();
-                    this.g = g.nextLevel();
-                    refreshPlayer();
-                    g.setScore(sco + 1000);
-                    respawnAllCharacter();
+                tick ++;
+                if(tick >= 2){
+                    g.sec();
+                    tick = 0;
                 }
+                avancedToNextLevel();
             }
             synchronized(clients){
                 for(ClientHandler ch : clients){
@@ -109,33 +108,74 @@ public class Serveur {
         }
     }
 
-    public void moveEnemy(Enemy e, String action){
-        
-    }
-
-    public void loadGame(){
-        g.loadFromFile();
-        for(ClientHandler ch : clients) {
-        ch.sendGame(g);
+    public void avancedToNextLevel(){
+        if(g.win()){
+            int sco = g.getScore();
+            addAllCharacter();
+            this.g = g.nextLevel(sco + 1000);
+            refreshCharacter();
+            respawnAllCharacter();
         }
     }
 
-    public void addAllPlayer(){
-        this.play.clear();
-        for(ClientHandler ch : clients) {
-            if(ch.getCharacter() instanceof Player){
-                Player p = (Player) ch.getCharacter();
-                this.play.add(p);  
-            }
-        } 
+    public void saveGame(){
+        g.saveToFile();
     }
 
-    public void refreshPlayer(){
-        for(int i = 0 ; i < this.play.size() ; i++) {
+    public void loadGame(){
+        Game gameLoad = g.loadFromFile();
+        for (int i = 0 ;  i < this.clients.size() ; i++){
+            if(this.clients.get(i).getCharacter() instanceof Player){
+                if(0 != gameLoad.getPlay().size()){
+                    this.clients.get(i).setCharacter(gameLoad.getPlay().get(0));
+                    gameLoad.getPlay().remove(0);
+                }else{
+                    this.clients.get(i).setCharacter(new Player(gameLoad.getMaze().getExit(), 1));
+                }
+            }else{
+                if(0 != gameLoad.getEne().size()){
+                    EnemyPlayer ep = new EnemyPlayer(gameLoad.getEne().get(0));
+                    this.clients.get(i).setCharacter(ep);
+                    gameLoad.getEne().remove(0);
+                }else{
+                    this.clients.get(i).setCharacter(new EnemyPlayer(1, gameLoad.getMaze().getHeight() - 2));
+                }
+            }
+        }
+        addAllCharacter();
+        this.g = gameLoad;
+        refreshCharacter();
+        for(ClientHandler ch : clients) {
+            ch.sendGame(g);
+        }
+    }
+
+    public void addAllCharacter(){
+        this.chara.clear();
+        for(ClientHandler ch : clients) {
+            this.chara.add(ch.getCharacter());  
+        }
+    } 
+
+    public void refreshCharacter(){
+        for(int i = this.g.getEne().size() - 1 ; i >= 0 ; i--){
+            Enemy e = this.g.getEne().get(i);
+            if(e instanceof EnemyPlayer){
+                this.g.getEne().remove(i);
+            }
+        }
+        this.g.getPlay().clear();
+        for(int i = 0 ; i < this.chara.size() ; i++){
             ClientHandler ch = this.clients.get(i);
-            Player p = this.play.get(i);
-            ch.setCharacter(p);
-            this.g.addPlayer(p);
+            Character c = this.chara.get(i);
+            ch.setCharacter(c);
+            if(c instanceof Player){
+                Player p = (Player) c;
+                this.g.addPlayer(p);
+            }else{
+                Enemy e = (Enemy) c;
+                this.g.addEnemy(e);
+            }
         }
     }
 
@@ -143,16 +183,21 @@ public class Serveur {
         for(ClientHandler ch : clients){
             if(ch.getCharacter() instanceof Player){
                 ch.getCharacter().respawn(g.getMaze().getExit(), 1);
+                Player p = (Player) ch.getCharacter();
+                p.setHp(5);
             }else{
                 ch.getCharacter().respawn(1, g.getMaze().getHeight()-2);
+                Enemy e = (Enemy) ch.getCharacter();
+                e.setFree(true);
+                e.setState(true);
             }
         }
     }
 
     public void restartGame(){
-        addAllPlayer();
-        this.g = new Game(5);
-        refreshPlayer();
+        addAllCharacter();
+        this.g = new Game(5, 0);
+        refreshCharacter();
         respawnAllCharacter();
     }
 }
