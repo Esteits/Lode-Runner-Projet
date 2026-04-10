@@ -76,7 +76,7 @@ public class Serveur {
                     if(tick % 2 == 1){
                         g.sec();
                     }
-                    if(tick >= 25){
+                    if(tick >= 35){
                         g.activEnemy();
                         tick = 0;
                     }
@@ -205,6 +205,7 @@ public class Serveur {
     public void restartGame(){
         addAllCharacter();
         this.lvl = 1;
+        this.tick = 0;
         this.g = new Game(5, 0, this.lvl);
         refreshCharacter();
         respawnAllCharacter(1);

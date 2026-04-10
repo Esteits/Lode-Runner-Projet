@@ -279,8 +279,13 @@ public class Game implements Serializable{
             if(!e.getFree()){
                 e.setTimeToRespawn(e.getTimeToRespawn() - 1);
                 if(e.getTimeToRespawn() <= 0){
-                    e.respawn(maze.getExit(), 0);
-                    e.setFree(true);
+                    if(e instanceof EnemyPatrouilleur){
+                        e.respawn(e.getX(), e.getY() - 1);
+                        e.setFree(true);
+                    }else{
+                        e.respawn(maze.getExit(), 0);
+                        e.setFree(true);
+                    }
                 }
             }
         }
