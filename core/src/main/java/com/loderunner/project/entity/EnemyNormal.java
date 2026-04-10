@@ -10,22 +10,32 @@ public class EnemyNormal extends Enemy implements Serializable {
 
     private Direction directionActuelle; 
     private boolean enRechercheEchelle; 
-    private int Tick;
+    private int tick;
 
     public EnemyNormal(int x, int y) {
         super(x, y);
         this.directionActuelle = Direction.NONE;
         this.enRechercheEchelle = false; 
-        this.Tick =0;
+        this.tick =0;
+    }
+
+    public EnemyNormal(int x, int y, boolean free, int time, boolean state) {
+        super(x, y);
+        this.tick = 0;
+        this.setFree(free);
+        this.setState(state);
+        this.setTimeToRespawn(time);
+        this.directionActuelle = Direction.NONE;
+        this.enRechercheEchelle = false; 
     }
 
     @Override
     public Direction mouvement(Game game) {
-        this.Tick += 3;
-        if (this.Tick < 10) {
+        this.tick += 3;
+        if (this.tick < 10) {
             return Direction.NONE; 
         }
-        this.Tick -= 10;
+        this.tick -= 10;
 
         Player cible = Target_Player(game);
         if (cible == null || cible.playerDead()) {

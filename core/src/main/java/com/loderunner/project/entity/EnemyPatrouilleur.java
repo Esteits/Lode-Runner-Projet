@@ -12,23 +12,33 @@ public class EnemyPatrouilleur extends Enemy implements Serializable {
 
     private Etat etat;
     private Direction directionActuelle; 
-    private int Tick;
+    private int tick;
 
     public EnemyPatrouilleur(int x, int y) {
         super(x, y);
+        this.setState(true);
         this.etat = Etat.PATROUILLE;
         this.directionActuelle = Direction.RIGHT; 
-        this.Tick = 0;
+        this.tick = 0;
+    }
+    
+    public EnemyPatrouilleur(int x, int y, boolean free, int time, boolean state) {
+        super(x, y);
+        this.tick = 0;
+        this.setFree(free);
+        this.setState(state);
+        this.setTimeToRespawn(time);
+        this.etat = Etat.PATROUILLE;
+        this.directionActuelle = Direction.RIGHT;  
     }
 
     @Override
     public Direction mouvement(Game game) {   
-           
-        this.Tick += 3;
-        if (this.Tick < 10) {
+        this.tick += 3;
+        if (this.tick < 10) {
             return Direction.NONE; 
         }
-        this.Tick -= 10;
+        this.tick -= 10;
 
         Player cible = Search_Player(game);
         if (cible != null) {
