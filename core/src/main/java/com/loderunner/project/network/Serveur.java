@@ -106,6 +106,11 @@ public class Serveur {
                 }
                 break;
         }
+        if (c instanceof Player) {
+            g.playerTreasureCol(); 
+            g.playerEnemyCol();    
+            g.canEscape();         
+        }
     }
 
     public void avancedToNextLevel(){
