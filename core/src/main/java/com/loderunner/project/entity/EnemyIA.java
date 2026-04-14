@@ -16,6 +16,14 @@ public class EnemyIA extends Enemy implements Serializable {
         this.tick = 0;
     }
 
+    public EnemyIA(int x, int y, boolean free, int time, boolean state) {
+        super(x, y);
+        this.tick = 0;
+        this.setFree(free);
+        this.setState(state);
+        this.setTimeToRespawn(time);
+    }
+
     @Override
     public Direction mouvement(Game game) {
         

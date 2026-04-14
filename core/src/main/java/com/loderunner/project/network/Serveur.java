@@ -18,15 +18,16 @@ public class Serveur {
     private Game g;
     private List<ClientHandler> clients = Collections.synchronizedList(new ArrayList<>());
     private List<Character> chara = new ArrayList<>();
-    private boolean mode = false; //true = coop, false = adversaire
+    private boolean mode = true; //true = coop, false = adversaire
     private int tick;
+    private int lvl = 1;
 
     Serveur(Game g, int p){
         this.g = g;
         this.port = p;
     }
     public static void main(String[] args) throws Exception{
-        Game g = new Game(5, 0);
+        Game g = new Game(5, 0, 1);
         Serveur serv = new Serveur(g, 8080);
         serv.start();
     }
@@ -40,7 +41,7 @@ public class Serveur {
                 try {
                     Socket soc = s.accept();
                     if(!mode && this.clients.size() > 0){
-                        Enemy e = new EnemyPlayer(1, this.g.getMaze().getHeight()-2) ;
+                        Enemy e = new EnemyPlayer(g.getMaze().getExit(), 1) ;
                         this.g.addEnemy(e);
                         ClientHandler client = new ClientHandler(this, e, soc);
                         clients.add(client);
@@ -70,12 +71,18 @@ public class Serveur {
                 e.printStackTrace();
             }
             synchronized(this){
-                tick ++;
-                if(tick >= 2){
-                    g.sec();
-                    tick = 0;
+                if(this.clients.size() >= 1){
+                    tick ++;
+                    if(tick % 2 == 1){
+                        g.sec();
+                    }
+                    if(tick >= 35){
+                        g.activEnemy();
+                        tick = 0;
+                    }
+                    avancedToNextLevel();
                 }
-                avancedToNextLevel();
+                
             }
             synchronized(clients){
                 for(ClientHandler ch : clients){
@@ -116,10 +123,11 @@ public class Serveur {
     public void avancedToNextLevel(){
         if(g.win()){
             int sco = g.getScore();
+            this.lvl++;
             addAllCharacter();
-            this.g = g.nextLevel(sco + 1000);
+            this.g = g.nextLevel(sco + 1000, this.lvl);
             refreshCharacter();
-            respawnAllCharacter();
+            respawnAllCharacter(0);
         }
     }
 
@@ -184,25 +192,27 @@ public class Serveur {
         }
     }
 
-    public void respawnAllCharacter(){
+    public void respawnAllCharacter(int a){ // a = 1 == restart
         for(ClientHandler ch : clients){
+            ch.getCharacter().respawn(g.getMaze().getExit(), 1);
             if(ch.getCharacter() instanceof Player){
-                ch.getCharacter().respawn(g.getMaze().getExit(), 1);
-                Player p = (Player) ch.getCharacter();
-                p.setHp(5);
-            }else{
-                ch.getCharacter().respawn(1, g.getMaze().getHeight()-2);
-                Enemy e = (Enemy) ch.getCharacter();
-                e.setFree(true);
-                e.setState(true);
+                if(a == 1){
+                    Player p = (Player) ch.getCharacter();
+                    p.setHp(5);
+                }else{
+                    Player p = (Player) ch.getCharacter();
+                    p.setHp(p.getHp() + 1);
+                }
             }
         }
     }
 
     public void restartGame(){
         addAllCharacter();
-        this.g = new Game(5, 0);
+        this.lvl = 1;
+        this.tick = 0;
+        this.g = new Game(5, 0, this.lvl);
         refreshCharacter();
-        respawnAllCharacter();
+        respawnAllCharacter(1);
     }
 }

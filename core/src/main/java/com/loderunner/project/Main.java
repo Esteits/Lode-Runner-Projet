@@ -84,7 +84,7 @@ public class Main extends ApplicationAdapter {
         tick = 0;
         tickDep = 0;
         try {
-            client = new Client("localhost", 8080);
+        client = new Client("192.168.1.180",8080);
         } catch (IOException e) {
             e.printStackTrace();
             client = null;

@@ -27,6 +27,7 @@ public class Game implements Serializable{
     private List<Player> play;
     private List<Enemy> ene;
     private List<Treasure> tre;
+    private int lvl;
 
     public Game(){  
         this.score = 0;
@@ -36,13 +37,35 @@ public class Game implements Serializable{
         this.tre = new ArrayList<>();
     }
 
-    public Game(int nbrTreasure, int score){
+    public Game(int nbrTreasure, int score, int lvl){
         this.score = score;
         this.maze = Maze.generation();
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
         this.tre = new ArrayList<>();
-        while(tre.size()<nbrTreasure){
+        int i = 1;
+        while(this.ene.size() < lvl){
+            switch (i % 3) {
+                case 1:
+                    EnemyNormal en = new EnemyNormal(this.maze.getExit(), 1);
+                    this.ene.add(en);
+                    break;
+                case 2:
+                    EnemyPatrouilleur ep = new EnemyPatrouilleur((int)(Math.random() * (this.maze.getWidth() - 1)) , (int)(Math.random() * (this.maze.getHeight() - 1)));
+                    while(this.maze.getTile(ep.getX(), ep.getY() - 1).getType() == 1 || this.maze.getTile(ep.getX(), ep.getY() - 1).getType() == 3){
+                        ep.setX((int)(Math.random() * (this.maze.getWidth() - 1)));
+                        ep.setY((int)(Math.random() * (this.maze.getHeight() - 1)));
+                    }
+                    this.ene.add(ep);
+                    break;
+                case 0:
+                    EnemyIA eIA = new EnemyIA(this.maze.getExit(), 1);
+                    this.ene.add(eIA);
+                    break;
+            }
+            i++;
+        }
+        while(tre.size() < nbrTreasure){
             Treasure t = new Treasure((int)(Math.random() * (this.maze.getWidth() - 1)) , (int)(Math.random() * (this.maze.getHeight() - 1)));
             if (maze.getTile(t.getX(), t.getY() + 1).getType()==1){
                 boolean already = false;
@@ -67,6 +90,13 @@ public class Game implements Serializable{
 
     public Maze getMaze(){
         return this.maze;
+    }
+
+    public int getLvl(){
+        return this.lvl;
+    }
+    public void setLvl(int l){
+        this.lvl = l;
     }
 
     public List<Player> getPlay(){
@@ -119,6 +149,7 @@ public class Game implements Serializable{
             return true;
         }return false;
     }
+
     public void moveCharacterRight(Character character){
         if (!isWall(character.getX()+1, character.getY()) && (!isPlayer(character.getX()+1, character.getY()) || character instanceof Enemy)){
             character.right();
@@ -142,22 +173,6 @@ public class Game implements Serializable{
     public void moveCharacterDown(Character character){
         if (maze.getTile(character.getX(), character.getY()+1).getType()==2 && (!isPlayer(character.getX(), character.getY()+1) || character instanceof Enemy)){
             character.down();
-        }
-    }
-
-    public synchronized void moveEnemy(int ind){
-        Enemy e = this.ene.get(ind);
-        if(e.getFree()){
-        Player p = this.play.get(0);
-            if(p.getY()>e.getY()){
-                e.down();
-            }else{
-                if(p.getX()>e.getX()){
-                    e.right();
-                }else{
-                    e.left();
-                }
-            }
         }
     }
 
@@ -202,7 +217,6 @@ public class Game implements Serializable{
         }
     }
     
-
     public synchronized void gravity(){
         for(Player p : play){
             if(!p.playerDead()){
@@ -238,6 +252,18 @@ public class Game implements Serializable{
         }
     }
 
+    public void activEnemy(){
+        boolean activ = false;
+        int i = 0;
+        while(i < this.getEne().size() && !activ){
+            if(!this.getEne().get(i).getState()){
+                this.getEne().get(i).setState(true);
+                activ = true;
+            }
+            i++;
+        }
+    }
+
     public void decrementPlayerInvTimer(){
         for(Player p : play){
             if(p.getInvin()){
@@ -253,8 +279,13 @@ public class Game implements Serializable{
             if(!e.getFree()){
                 e.setTimeToRespawn(e.getTimeToRespawn() - 1);
                 if(e.getTimeToRespawn() <= 0){
-                    e.respawn(maze.getExit(), 0);
-                    e.setFree(true);
+                    if(e instanceof EnemyPatrouilleur){
+                        e.respawn(e.getX(), e.getY() - 1);
+                        e.setFree(true);
+                    }else{
+                        e.respawn(maze.getExit(), 0);
+                        e.setFree(true);
+                    }
                 }
             }
         }
@@ -329,6 +360,7 @@ public class Game implements Serializable{
         }
     }
 
+
     public void canEscape(){
         for(Treasure t : tre){
             if(!t.getCollect()){
@@ -356,13 +388,15 @@ public class Game implements Serializable{
         return true;
     }
 
-    public Game nextLevel(int score){
-        return new Game(5, score);
+    public Game nextLevel(int score, int lvl){
+        Game g = new Game(5, score, lvl);
+        g.setLvl(lvl);
+        return g;
     }
 
     public void saveToFile(){
         try (BufferedWriter b = new BufferedWriter(new FileWriter("level.txt"))){
-            b.write(maze.getWidth() + " " + maze.getHeight() + " " + maze.getExit() + " " + this.getScore());
+            b.write(maze.getWidth() + " " + maze.getHeight() + " " + maze.getExit() + " " + this.getScore() + " " + this.getLvl());
             b.newLine();
 
             for(int y = 0 ; y < maze.getHeight() ; y++){
@@ -439,6 +473,7 @@ public class Game implements Serializable{
             String[] dims = b.readLine().split(" ");
             g.maze = new Maze(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
             g.score = Integer.parseInt(dims[3]);
+            g.lvl = Integer.parseInt(dims[4]);
             for(int y = 0 ; y < g.maze.getHeight() ; y++){
                 String line = b.readLine();
                 for(int x = 0 ; x < g.maze.getWidth() ; x++){
@@ -478,10 +513,6 @@ public class Game implements Serializable{
                 g.addPlayer(p);
                 line = b.readLine();
             }
-
-            // Tu met a Ennemy 5 paramètre alors qu'il en en prend que 2. Donc je ne sais pas quoi te dire 
-            // Surtout que EnemyNormal/Patrouilleur et IA héritent de Enemy.java, donc avec "setters" on peut modifier leur état (setFree, setTimeToRespawn, setState).
-            /* 
             g.ene = new ArrayList<>();
             line = b.readLine();
             while(!line.contentEquals("Tre")){
@@ -501,7 +532,6 @@ public class Game implements Serializable{
                 }
                 line = b.readLine();
             }
-            */
 
             g.tre = new ArrayList<>();
             line = b.readLine();
