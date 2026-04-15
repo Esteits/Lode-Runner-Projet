@@ -9,19 +9,24 @@ import com.loderunner.project.engine.Game;
 import com.loderunner.project.entity.Character;
 
 public class ClientHandler extends Thread{
+    private String name;
     private Serveur serv;
     private Character c;
     private Socket s;
-    private Game g;
     private ObjectInputStream in;
     private ObjectOutputStream out;
 
-    public ClientHandler(Serveur ser, Character c, Socket soc) throws IOException{
+    public ClientHandler(Serveur ser, Character c, Socket soc, String name) throws IOException{
+        this.name = name;
         this.serv = ser;
         this.c = c;
         this.s = soc;
         out = new ObjectOutputStream(s.getOutputStream());
         in = new ObjectInputStream(s.getInputStream());
+    }
+
+    public String getNames(){
+        return this.name;
     }
 
     public Character getCharacter(){
@@ -57,7 +62,6 @@ public class ClientHandler extends Thread{
 
     public void sendGame(Game game){
         try{
-            this.g = game;
             out.reset();
             out.writeObject(game);
             out.flush();

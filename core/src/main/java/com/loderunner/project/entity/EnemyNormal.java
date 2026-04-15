@@ -1,12 +1,9 @@
 package com.loderunner.project.entity;
 
-import java.io.Serializable;
-
 import com.loderunner.project.engine.Game;
-import com.loderunner.project.entity.Character.Direction;
 import com.loderunner.project.map.Tiles;
 
-public class EnemyNormal extends Enemy implements Serializable {
+public class EnemyNormal extends Enemy {
 
     private Direction directionActuelle; 
     private boolean enRechercheEchelle; 
