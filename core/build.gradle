@@ -1,6 +1,10 @@
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 eclipse.project.name = appName + '-core'
 
+plugins{
+  id 'java'
+}
+
 dependencies {
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
   api "org.apache.groovy:groovy-all:$groovyVersion"
@@ -8,5 +12,20 @@ dependencies {
 
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
+  }
+}
+
+jar{
+  manifest{
+    attributes(
+      'Main-Class' : 'com.loderunner.project.network.Serveur'
+    )
+  }
+
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  from{
+    configurations.runtimeClasspath.collect{
+      it.isDirectory() ? it : zipTree(it)
+    }
   }
 }
