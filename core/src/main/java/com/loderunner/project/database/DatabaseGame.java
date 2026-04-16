@@ -46,29 +46,42 @@ public class DatabaseGame {
         }
     }
 
-    public static void printGames(){
+    public static String printGames(String mode){
         String sql = """
-                SELECT g.mode, g.score, p.name
+                SELECT g.id, g.mode, g.score, p.name
                 FROM game g
                 LEFT JOIN game_player gp ON g.id = gp.game_id
                 LEFT JOIN player p ON gp.player_id = p.id
-                ORDER BY g.id
+                WHERE g.mode = ?
+                ORDER BY g.score DESC
                 LIMIT 10
         """;
 
         try(Connection c = DatabaseManager.connect();
-            Statement stmt = c.createStatement();
-            ResultSet rs = stmt.executeQuery(sql)) {
+            PreparedStatement stmt = c.prepareStatement(sql)) {
+                stmt.setString(1, mode);
+                ResultSet rs = stmt.executeQuery();
+                int lastId = -1;
+                String response = "";
                 while(rs.next()){
-                    System.out.print("Mode" + rs.getString("mode") + "| Score : " + rs.getString("score") + "| Joueurs: ");
-                    if(rs.getString("name") != null){
-                        System.out.print(rs.getString("name"));
+                    int idGame = rs.getInt("id");
+                    if(idGame != lastId){
+                        response += " \n";
+                        response += "Mode" + rs.getString("mode") + "| Score : " + rs.getString("score") + "| Joueurs: ";
+                        lastId = idGame;
+                        if(rs.getString("name") != null){
+                            response += rs.getString("name");
+                        }
+                    }else{
+                        if(rs.getString("name") != null){
+                            response += ", " + rs.getString("name");
+                        }
                     }
-                    System.out.println();
                 }
-                System.out.println();
+                return response;
         }catch(SQLException e){
             e.printStackTrace();
+            return "Erreur";
         }
     }
 }

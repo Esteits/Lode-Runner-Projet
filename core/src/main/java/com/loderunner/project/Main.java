@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.loderunner.project.database.DatabaseGame;
 import com.loderunner.project.engine.Game;
 import com.loderunner.project.entity.Character.Direction;
 import com.loderunner.project.entity.Enemy;
@@ -299,11 +300,16 @@ public class Main extends ApplicationAdapter {
     
     public void lose(){
         if(g.gameOver()){
-            gameOver.getData().setScale(5);
-            GlyphLayout layout = new GlyphLayout(gameOver, "GAME OVER");
+            gameOver.getData().setScale(2);
+            client.action("GET_SCORE");
+            String score = client.getScore();
+            if(score == null){
+                score = "gameOver";
+            }
+            GlyphLayout layout = new GlyphLayout(gameOver, score);
             float x = (Gdx.graphics.getWidth() - layout.width) / 2;
             float y = (Gdx.graphics.getHeight() + layout.height) / 2;
-            gameOver.setColor(Color.BLACK);
+            gameOver.setColor(Color.RED);
             gameOver.draw(batch, layout, x, y);
         }
     }

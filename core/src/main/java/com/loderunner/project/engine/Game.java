@@ -20,7 +20,6 @@ import com.loderunner.project.entity.Player;
 import com.loderunner.project.entity.Treasure;
 import com.loderunner.project.map.Maze;
 import com.loderunner.project.map.Tiles;
-import com.loderunner.project.database.DatabaseGame;
 
 
 public class Game implements Serializable{
@@ -211,7 +210,7 @@ public class Game implements Serializable{
         Tiles tile = maze.getTile(digX, digY);
         if(tile.getType()==1 && digX != maze.getWidth()-1 && digX != 0){
             tile.setState(false);
-            tile.setRespawn(50);
+            tile.setRespawn(65);
         }
     }
 
@@ -231,7 +230,7 @@ public class Game implements Serializable{
             if(maze.getTile(c.getX(), c.getY()).getType()==1 && maze.getTile(c.getX(), c.getY()).getState()==false && e.getFree()){
                 this.score += 10;
                 e.setFree(false);
-                e.setTimeToRespawn(10);
+                e.setTimeToRespawn(25);
                 return;
             }
         }
@@ -360,7 +359,7 @@ public class Game implements Serializable{
                             p.loseHp();
                             if(!p.playerDead()){
                                 p.setInvin(true);
-                                p.setTimeInve(20);
+                                p.setTimeInve(10);
                                 p.respawn(maze.getExit(), 1);
                             }
                         }

@@ -13,7 +13,6 @@ import com.loderunner.project.entity.Enemy;
 import com.loderunner.project.entity.EnemyPlayer;
 import com.loderunner.project.entity.Player;
 import com.loderunner.project.database.DatabaseManager;
-import com.loderunner.project.database.DatabasePlayer;
 import com.loderunner.project.database.DatabaseGame;
 
 public class Serveur {
@@ -36,6 +35,10 @@ public class Serveur {
         serv.start();
     }
 
+    public Game getGame(){
+        return this.g;
+    }
+    
     public void start() throws Exception{
         ServerSocket s = new ServerSocket(port);
         System.out.println("Serveur lancer");
@@ -138,7 +141,6 @@ public class Serveur {
             DatabaseGame.refreshScore(this.id, sco);
             refreshCharacter();
             respawnAllCharacter(0);
-            DatabaseGame.printGames();
         }
     }
 

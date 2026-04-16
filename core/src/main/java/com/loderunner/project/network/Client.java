@@ -10,6 +10,7 @@ public class Client {
     private ObjectOutputStream out;
     private ObjectInputStream in;
     private volatile Game g;
+    private String score;
 
     public Client(String host,int port) throws IOException {
         socket = new Socket(host, port);
@@ -22,11 +23,20 @@ public class Client {
         return g;
     }
 
+    public String getScore(){
+        return this.score;
+    }
+
     public void listen(){
         new Thread(() -> {
             try{
                 while(true){
-                    g = (Game) in.readObject();
+                    Object obj = in.readObject();
+                    if(obj instanceof Game){
+                        g = (Game) obj;
+                    }else{
+                        this.score = (String) obj;
+                    }
                 }
             }catch (Exception e){
                 System.out.println("Au revoir");

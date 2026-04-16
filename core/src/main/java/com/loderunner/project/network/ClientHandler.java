@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import com.loderunner.project.database.DatabaseGame;
 import com.loderunner.project.engine.Game;
 import com.loderunner.project.entity.Character;
 
@@ -50,6 +51,13 @@ public class ClientHandler extends Thread{
                     case "RESTART":
                         serv.restartGame();
                         break;
+                    case "GET_SCORE":
+                        String score = DatabaseGame.printGames(this.serv.getGame().getMode().toString());
+                        if(score.equals("Erreur")){
+                            score = "Game Over";
+                        }
+                        sendMessage(score);
+                        break;
                     default:
                         serv.moveCharacter(c, action);
                 }  
@@ -57,6 +65,15 @@ public class ClientHandler extends Thread{
         }
         catch(Exception e){
             System.out.println("Client deconnecté");
+        }
+    }
+
+    public void sendMessage(String s){
+        try{
+            out.writeObject(s);
+            out.flush();
+        }catch(IOException e){
+            e.printStackTrace();
         }
     }
 
