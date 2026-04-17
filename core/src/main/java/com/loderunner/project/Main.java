@@ -45,9 +45,22 @@ public class Main extends ApplicationAdapter {
     private Animation<TextureRegion> animMarcheDroiteInvin;
     private Animation<TextureRegion> animMarcheGaucheInvin;
     private Animation<TextureRegion> animChuteInvin;
+    private Animation<TextureRegion> animBackInvin;
+
+    // partie en ligne
+    private Animation<TextureRegion> animMarcheDroiteRed;
+    private Animation<TextureRegion> animMarcheGaucheRed;
+    private Animation<TextureRegion> animIdleRed;
+    private Animation<TextureRegion> animMarcheDroiteInvinRed;
+    private Animation<TextureRegion> animMarcheGaucheInvinRed;
+    private Animation<TextureRegion> animChuteInvinRed;
+    private Animation<TextureRegion> animBackRed;
+    private Animation<TextureRegion> animBackInvinRed;
     
     private TextureRegion imageChute; 
     private TextureRegion imageDosEchelle;
+    private TextureRegion imageChuteRed; 
+    private TextureRegion imageDosEchelleRed;
     private float stateTime = 0f;
 
     private BitmapFont scoreText;
@@ -69,22 +82,38 @@ public class Main extends ApplicationAdapter {
         wallbreak = new Texture("wallbreak.png");
         background = new Texture("Background.png");
         
+        animHeart = creerAnimation("heart.png", 6, 64, 64);
+        animTreasure = creerAnimation("treasure.png", 7, 32, 32);
+
         animEnemyDroite = creerAnimation("EnnemyRight.png", 7, 32, 32);
         animEnemyGauche = creerAnimation("EnnemyLeft.png", 7, 32, 32);
-        animHeart = creerAnimation("heart.png", 6, 64, 64);
+
         animMarcheDroite = creerAnimation("PlayerRunRight.png", 6, 32, 32);
         animMarcheGauche = creerAnimation("PlayerRunLeft.png", 6, 32, 32);
         animIdle = creerAnimation("PlayerWait.png", 9, 32, 32);
-        animTreasure = creerAnimation("treasure.png", 7, 32, 32);
         animMarcheDroiteInvin = creerAnimation("PlayerRunRightInvincible.png", 6, 32, 32);
         animMarcheGaucheInvin = creerAnimation("PlayerRunLeftInvincible.png", 6, 32, 32);
         animChuteInvin = creerAnimation("PlayerFallInvincible.png", 5, 32, 32);
-        
+        animBackInvin = creerAnimation("PlayerBackInvincible.png", 6, 32, 32);
+
+        animMarcheDroiteRed = creerAnimation("RedPlayerRunRight.png", 6, 32, 32);
+        animMarcheGaucheRed = creerAnimation("RedPlayerRunLeft.png", 6, 32, 32);
+        animMarcheDroiteInvinRed = creerAnimation("RedPlayerRunRightInvincible.png", 6, 32, 32);
+        animMarcheGaucheInvinRed = creerAnimation("RedPlayerRunLeftInvincible.png", 6, 32, 32);
+        animChuteInvinRed = creerAnimation("RedPlayerFallInvincible.png", 5, 32, 32);
+        animBackInvinRed = creerAnimation("RedPlayerBackInvincible.png", 6, 32, 32);
+
         Texture sheetChute = new Texture(Gdx.files.internal("PlayerFall.png"));
         imageChute = new TextureRegion(sheetChute, 32, 32);
 
         Texture sheetEchelle = new Texture(Gdx.files.internal("PlayerBack.png"));
         imageDosEchelle = new TextureRegion(sheetEchelle, 32, 32);
+
+        Texture sheetEchelleRed = new Texture(Gdx.files.internal("RedPlayerBack.png"));
+        imageDosEchelleRed = new TextureRegion(sheetEchelleRed, 32, 32);
+
+        Texture sheetChuteRed = new Texture(Gdx.files.internal("RedPlayerFall.png"));
+        imageChuteRed = new TextureRegion(sheetChuteRed, 32, 32);
 
         tick = 0;
         tickDep = 0;
@@ -229,7 +258,11 @@ public class Main extends ApplicationAdapter {
                                 frameActuelle = animMarcheDroite.getKeyFrame(stateTime, true);
                             }
                         }else{
-                            //Travaille
+                            if (p.getInvin()) {
+                                frameActuelle = animMarcheDroiteInvinRed.getKeyFrame(stateTime, true);
+                            } else {
+                                frameActuelle = animMarcheDroiteRed.getKeyFrame(stateTime, true);
+                            }
                         }
                         break;
                         
@@ -241,22 +274,37 @@ public class Main extends ApplicationAdapter {
                                 frameActuelle = animMarcheGauche.getKeyFrame(stateTime, true);
                             }
                         }else{
-                            //ici
+                            if (p.getInvin()) {
+                                frameActuelle = animMarcheGaucheInvinRed.getKeyFrame(stateTime, true);
+                            } else {
+                                frameActuelle = animMarcheGaucheRed.getKeyFrame(stateTime, true);
+                            }
                         }
                         break;
                         
                     case UP:
                         if(isThisPlayer(p)){
-                            frameActuelle = imageDosEchelle; 
+                            if (p.getInvin()) {
+                                frameActuelle = animBackInvin.getKeyFrame(stateTime, true);
+                            } else {
+                                frameActuelle = imageDosEchelle;
+                            }
                         }else{
-                            //ici
+                            if (p.getInvin()) {
+                                frameActuelle = animBackInvinRed.getKeyFrame(stateTime, true);
+                            } else {
+                                frameActuelle = imageDosEchelleRed;
+                            }
                         }
                         break;
                         
                     case DOWN:
                         if(isThisPlayer(p)){
                             if (typeCaseActuelle == 2) {
-                                frameActuelle = imageDosEchelle;
+                                if(p.getInvin()){
+                                    frameActuelle = animBackInvin.getKeyFrame(stateTime, true);
+                                }else{frameActuelle = imageDosEchelle; }
+
                             } else {
                                 if (p.getInvin()) {
                                     frameActuelle = animChuteInvin.getKeyFrame(stateTime, true);
@@ -265,11 +313,23 @@ public class Main extends ApplicationAdapter {
                                 }
                             }                        
                         }else{
-                            //ici
+                            if (typeCaseActuelle == 2) {
+                                if(p.getInvin()){
+                                    frameActuelle = animBackInvinRed.getKeyFrame(stateTime, true);
+                                }else{
+                                    frameActuelle = animBackInvinRed.getKeyFrame(stateTime, true);
+                                    }
+                            } else {
+                                if (p.getInvin()) {
+                                    frameActuelle = animChuteInvinRed.getKeyFrame(stateTime, true);
+                                } else {
+                                    frameActuelle = imageChuteRed; 
+                                }
+                            }
                         }
                         break;
                         
-                    case NONE: default: 
+                    default: 
                         frameActuelle = animIdle.getKeyFrame(stateTime, true); 
                         break;
                 }
