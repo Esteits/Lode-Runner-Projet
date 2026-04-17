@@ -12,45 +12,55 @@ import com.loderunner.project.entity.Character;
 import com.loderunner.project.entity.Enemy;
 import com.loderunner.project.entity.EnemyPlayer;
 import com.loderunner.project.entity.Player;
+import com.loderunner.project.database.DatabaseManager;
+import com.loderunner.project.database.DatabaseGame;
 
 public class Serveur {
     private int port;
     private Game g;
     private List<ClientHandler> clients = Collections.synchronizedList(new ArrayList<>());
     private List<Character> chara = new ArrayList<>();
-    private boolean mode = true; //true = coop, false = adversaire
     private int tick;
     private int lvl = 1;
+    private int id;
 
     Serveur(Game g, int p){
         this.g = g;
         this.port = p;
     }
     public static void main(String[] args) throws Exception{
-        Game g = new Game(5, 0, 1);
+        DatabaseManager.init();
+        Game g = new Game(5, 0, 1, Game.Mode.COOP);
         Serveur serv = new Serveur(g, 8080);
         serv.start();
     }
 
+    public Game getGame(){
+        return this.g;
+    }
+    
     public void start() throws Exception{
         ServerSocket s = new ServerSocket(port);
         System.out.println("Serveur lancer");
-
+        Game.Mode mode = Game.Mode.COOP;
+        this.id = DatabaseGame.createGame(mode.toString());
+        this.g.setId(this.id);
         new Thread(()->{
             while(true) {
                 try {
                     Socket soc = s.accept();
-                    if(!mode && this.clients.size() > 0){
+                    if(this.g.getMode() == Game.Mode.VERSUS && this.clients.size() > 0){
                         Enemy e = new EnemyPlayer(g.getMaze().getExit(), 1) ;
                         this.g.addEnemy(e);
-                        ClientHandler client = new ClientHandler(this, e, soc);
+                        ClientHandler client = new ClientHandler(this, e, soc, "Enemy" + this.clients.size());
                         clients.add(client);
                         client.start();
                     }else{
                         Player p = new Player(g.getMaze().getExit(), 1);
                         this.g.addPlayer(p);
-                        ClientHandler client = new ClientHandler(this, p, soc);
+                        ClientHandler client = new ClientHandler(this, p, soc, "Player " + this.clients.size());
                         clients.add(client);
+                        DatabaseGame.addPlayerToGame(this.g.getId(), client.getNames());
                         client.start();
                     }
                     System.out.println("Client connecté");
@@ -122,10 +132,13 @@ public class Serveur {
 
     public void avancedToNextLevel(){
         if(g.win()){
-            int sco = g.getScore();
+            int sco = g.getScore() + 1000;
             this.lvl++;
             addAllCharacter();
-            this.g = g.nextLevel(sco + 1000, this.lvl);
+            Game.Mode m = this.g.getMode();
+            this.g = g.nextLevel(sco, this.lvl, m);
+            this.g.setId(this.id);
+            DatabaseGame.refreshScore(this.id, sco);
             refreshCharacter();
             respawnAllCharacter(0);
         }
@@ -208,11 +221,19 @@ public class Serveur {
     }
 
     public void restartGame(){
-        addAllCharacter();
-        this.lvl = 1;
-        this.tick = 0;
-        this.g = new Game(5, 0, this.lvl);
-        refreshCharacter();
-        respawnAllCharacter(1);
-    }
+        synchronized(this){
+            addAllCharacter();
+            this.lvl = 1;
+            this.tick = 0;
+            Game.Mode m = this.g.getMode();
+            this.g = new Game(5, 0, this.lvl, m);
+            this.id = DatabaseGame.createGame(m.toString());
+            this.g.setId(id);
+            for(ClientHandler ch : clients){
+                DatabaseGame.addPlayerToGame(this.g.getId(), ch.getNames());
+            }
+            refreshCharacter();
+            respawnAllCharacter(1);
+        }
+    }        
 }

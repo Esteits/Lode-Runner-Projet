@@ -21,6 +21,7 @@ import com.loderunner.project.entity.Treasure;
 import com.loderunner.project.map.Maze;
 import com.loderunner.project.map.Tiles;
 
+
 public class Game implements Serializable{
     private int score;
     private Maze maze;
@@ -28,6 +29,13 @@ public class Game implements Serializable{
     private List<Enemy> ene;
     private List<Treasure> tre;
     private int lvl;
+    private int id;
+    private Mode modeJeu;
+
+    public enum Mode{
+        COOP,
+        VERSUS
+    };
 
     public Game(){  
         this.score = 0;
@@ -37,12 +45,13 @@ public class Game implements Serializable{
         this.tre = new ArrayList<>();
     }
 
-    public Game(int nbrTreasure, int score, int lvl){
+    public Game(int nbrTreasure, int score, int lvl, Mode mJeu){
         this.score = score;
         this.maze = Maze.generation();
         this.play = new ArrayList<>();
         this.ene = new ArrayList<>();
         this.tre = new ArrayList<>();
+        this.modeJeu = mJeu;
         int i = 1;
         while(this.ene.size() < lvl){
             switch (i % 3) {
@@ -52,7 +61,7 @@ public class Game implements Serializable{
                     break;
                 case 2:
                     EnemyPatrouilleur ep = new EnemyPatrouilleur((int)(Math.random() * (this.maze.getWidth() - 1)) , (int)(Math.random() * (this.maze.getHeight() - 1)));
-                    while(this.maze.getTile(ep.getX(), ep.getY() - 1).getType() == 1 || this.maze.getTile(ep.getX(), ep.getY() - 1).getType() == 3){
+                    while(ep.getY() <= 1 || ep.getX() < 1 || (this.maze.getTile(ep.getX(), ep.getY() - 1).getType() != 1 && this.maze.getTile(ep.getX(), ep.getY() - 1).getType() != 3)){
                         ep.setX((int)(Math.random() * (this.maze.getWidth() - 1)));
                         ep.setY((int)(Math.random() * (this.maze.getHeight() - 1)));
                     }
@@ -97,6 +106,20 @@ public class Game implements Serializable{
     }
     public void setLvl(int l){
         this.lvl = l;
+    }
+
+    public int getId(){
+        return this.id;
+    }
+    public void setId(int id){
+        this.id = id;
+    }
+
+    public Mode getMode(){
+        return this.modeJeu;
+    }
+    public void setMode(Mode jeu){
+        this.modeJeu = jeu;
     }
 
     public List<Player> getPlay(){
@@ -187,7 +210,7 @@ public class Game implements Serializable{
         Tiles tile = maze.getTile(digX, digY);
         if(tile.getType()==1 && digX != maze.getWidth()-1 && digX != 0){
             tile.setState(false);
-            tile.setRespawn(50);
+            tile.setRespawn(65);
         }
     }
 
@@ -279,13 +302,8 @@ public class Game implements Serializable{
             if(!e.getFree()){
                 e.setTimeToRespawn(e.getTimeToRespawn() - 1);
                 if(e.getTimeToRespawn() <= 0){
-                    if(e instanceof EnemyPatrouilleur){
-                        e.respawn(e.getX(), e.getY() - 1);
-                        e.setFree(true);
-                    }else{
-                        e.respawn(maze.getExit(), 0);
-                        e.setFree(true);
-                    }
+                    e.respawn(maze.getExit(), 0);
+                    e.setFree(true);
                 }
             }
         }
@@ -300,7 +318,6 @@ public class Game implements Serializable{
                 }
             }
         }
-
         for(Enemy e : ene){
             if (e.getX()==x && e.getY()==y){
                 e.setFree(true); 
@@ -338,7 +355,7 @@ public class Game implements Serializable{
                             p.loseHp();
                             if(!p.playerDead()){
                                 p.setInvin(true);
-                                p.setTimeInve(20);
+                                p.setTimeInve(10);
                                 p.respawn(maze.getExit(), 1);
                             }
                         }
@@ -393,15 +410,15 @@ public class Game implements Serializable{
         return true;
     }
 
-    public Game nextLevel(int score, int lvl){
-        Game g = new Game(5, score, lvl);
+    public Game nextLevel(int score, int lvl, Mode mJeu){
+        Game g = new Game(5, score, lvl, mJeu);
         g.setLvl(lvl);
         return g;
     }
 
     public void saveToFile(){
         try (BufferedWriter b = new BufferedWriter(new FileWriter("level.txt"))){
-            b.write(maze.getWidth() + " " + maze.getHeight() + " " + maze.getExit() + " " + this.getScore() + " " + this.getLvl());
+            b.write(maze.getWidth() + " " + maze.getHeight() + " " + maze.getExit() + " " + this.getScore() + " " + this.getLvl() + " " + this.getId() + " " + this.getMode());
             b.newLine();
 
             for(int y = 0 ; y < maze.getHeight() ; y++){
@@ -479,6 +496,8 @@ public class Game implements Serializable{
             g.maze = new Maze(Integer.parseInt(dims[0]), Integer.parseInt(dims[1]), Integer.parseInt(dims[2]));
             g.score = Integer.parseInt(dims[3]);
             g.lvl = Integer.parseInt(dims[4]);
+            g.id = Integer.parseInt(dims[5]);
+            g.modeJeu = Mode.valueOf(dims[6]);
             for(int y = 0 ; y < g.maze.getHeight() ; y++){
                 String line = b.readLine();
                 for(int x = 0 ; x < g.maze.getWidth() ; x++){

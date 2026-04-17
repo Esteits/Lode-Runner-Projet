@@ -1,13 +1,11 @@
 package com.loderunner.project.entity;
 
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.Queue;
 
 import com.loderunner.project.engine.Game;
-import com.loderunner.project.entity.Character.Direction;
 
-public class EnemyIA extends Enemy implements Serializable {
+public class EnemyIA extends Enemy{
 
     private int tick;
 
