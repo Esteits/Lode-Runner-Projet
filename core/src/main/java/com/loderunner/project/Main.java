@@ -287,7 +287,7 @@ public class Main extends ApplicationAdapter {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ALT_LEFT)){
             client.action("LOAD");;
         }
-        if(!g.getPlay().get(ind).playerDead()){
+        if(!g.allPlayerDead()){
             if(Gdx.input.isKeyPressed(Input.Keys.D)){
                 tickDep += 1;
                 if (tickDep >= 10){
@@ -317,7 +317,7 @@ public class Main extends ApplicationAdapter {
                 }
             }
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
-                client.action("DIG");;
+                client.action("DIG");
             }
         }else{
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){

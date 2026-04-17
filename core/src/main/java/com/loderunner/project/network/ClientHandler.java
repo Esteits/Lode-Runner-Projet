@@ -65,13 +65,21 @@ public class ClientHandler extends Thread{
         }
         catch(Exception e){
             System.out.println("Client deconnecté");
+            serv.removeClient(this);
+            try{
+                s.close();
+            }catch(IOException ex){
+                ex.printStackTrace();
+            }
         }
     }
 
     public void sendMessage(String s){
         try{
-            out.writeObject(s);
-            out.flush();
+            synchronized(out){
+                out.writeObject(s);
+                out.flush();
+            } 
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -79,11 +87,18 @@ public class ClientHandler extends Thread{
 
     public void sendGame(Game game){
         try{
-            out.reset();
-            out.writeObject(game);
-            out.flush();
+            synchronized(out){
+                out.reset();
+                out.writeObject(game);
+                out.flush();
+            }
         }catch(IOException e){
-            e.printStackTrace();
+            serv.removeClient(this);
+            try{
+                s.close();
+            }catch(IOException ex){
+                ex.printStackTrace();
+            }
         }
     }
 }

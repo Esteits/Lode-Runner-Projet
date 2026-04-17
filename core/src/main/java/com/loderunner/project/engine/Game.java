@@ -53,6 +53,7 @@ public class Game implements Serializable{
         this.tre = new ArrayList<>();
         this.modeJeu = mJeu;
         int i = 1;
+        this.lvl = lvl;
         while(this.ene.size() < lvl){
             switch (i % 3) {
                 case 1:
@@ -155,6 +156,16 @@ public class Game implements Serializable{
         decrementEnemyTimer();
         decrementTileTimer();
         canEscape();
+    }
+
+    public boolean allPlayerDead(){
+        boolean alive = true;
+        for(Player p : play){
+            if(!p.playerDead()){
+                alive = false;
+            }
+        }
+        return alive;
     }
 
     public boolean isPlayer(int x, int y){

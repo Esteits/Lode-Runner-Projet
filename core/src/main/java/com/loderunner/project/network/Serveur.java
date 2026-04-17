@@ -90,6 +90,9 @@ public class Serveur {
                         g.activEnemy();
                         tick = 0;
                     }
+                    if(g.allPlayerDead()){
+                        DatabaseGame.refreshScore(this.id, g.getScore());
+                    }
                     avancedToNextLevel();
                 }
                 
@@ -102,6 +105,14 @@ public class Serveur {
         }
     }
 
+    public synchronized void removeClient(ClientHandler ch){
+        clients.remove(ch);
+        if(ch.getCharacter() instanceof Player){
+            g.getPlay().remove(ch.getCharacter());
+        }else{
+            g.getEne().remove(ch.getCharacter());
+        }
+    }
     public void moveCharacter(Character c, String action){
         switch (action) {
             case "RIGHT":
@@ -138,6 +149,7 @@ public class Serveur {
             Game.Mode m = this.g.getMode();
             this.g = g.nextLevel(sco, this.lvl, m);
             this.g.setId(this.id);
+            this.tick = 0;
             DatabaseGame.refreshScore(this.id, sco);
             refreshCharacter();
             respawnAllCharacter(0);
@@ -191,16 +203,13 @@ public class Serveur {
             }
         }
         this.g.getPlay().clear();
-        for(int i = 0 ; i < this.chara.size() ; i++){
-            ClientHandler ch = this.clients.get(i);
-            Character c = this.chara.get(i);
+        for(ClientHandler ch : this.clients){
+            Character c = ch.getCharacter();
             ch.setCharacter(c);
             if(c instanceof Player){
-                Player p = (Player) c;
-                this.g.addPlayer(p);
-            }else{
-                Enemy e = (Enemy) c;
-                this.g.addEnemy(e);
+                this.g.addPlayer((Player) c);
+            } else {
+                this.g.addEnemy((Enemy) c);
             }
         }
     }
@@ -221,13 +230,14 @@ public class Serveur {
     }
 
     public void restartGame(){
+        Game.Mode m = this.g.getMode();
+        int newId = DatabaseGame.createGame(m.toString());
         synchronized(this){
             addAllCharacter();
             this.lvl = 1;
             this.tick = 0;
-            Game.Mode m = this.g.getMode();
+            this.id = newId;
             this.g = new Game(5, 0, this.lvl, m);
-            this.id = DatabaseGame.createGame(m.toString());
             this.g.setId(id);
             for(ClientHandler ch : clients){
                 DatabaseGame.addPlayerToGame(this.g.getId(), ch.getNames());
