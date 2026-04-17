@@ -14,7 +14,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.loderunner.project.database.DatabaseGame;
 import com.loderunner.project.engine.Game;
 import com.loderunner.project.entity.Character.Direction;
 import com.loderunner.project.entity.Enemy;
@@ -28,7 +27,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Main extends ApplicationAdapter {
     private Game g ;
     private Client client;
-    private int playerId;
     private SpriteBatch batch;
 
     private Texture bedrock;
@@ -153,7 +151,7 @@ public class Main extends ApplicationAdapter {
 
         batch.end();
 
-        inputPlayer(playerId);
+        inputPlayer();
     }
 
     @Override
@@ -209,6 +207,13 @@ public class Main extends ApplicationAdapter {
         }
     }
 
+    public Boolean isThisPlayer(Player p){
+        if(p.getName().equals(client.getName())){
+            return true;
+        }
+        return false;
+    }
+
     public void drawPlayer(int width, int height, int tileWidth, int tileHeight){
         for (Player p: g.getPlay()){
             if(!p.playerDead()){
@@ -216,35 +221,51 @@ public class Main extends ApplicationAdapter {
                 int typeCaseActuelle = g.getMaze().getTile(p.getX(), p.getY()).getType();
                 
                 switch (p.getDirection()) {
-                    case RIGHT: 
-                        if (p.getInvin()) {
-                            frameActuelle = animMarcheDroiteInvin.getKeyFrame(stateTime, true);
-                        } else {
-                            frameActuelle = animMarcheDroite.getKeyFrame(stateTime, true);
+                    case RIGHT:
+                        if(isThisPlayer(p)){
+                            if (p.getInvin()) {
+                                frameActuelle = animMarcheDroiteInvin.getKeyFrame(stateTime, true);
+                            } else {
+                                frameActuelle = animMarcheDroite.getKeyFrame(stateTime, true);
+                            }
+                        }else{
+                            //Travaille
                         }
                         break;
                         
-                    case LEFT: 
-                        if (p.getInvin()) {
-                            frameActuelle = animMarcheGaucheInvin.getKeyFrame(stateTime, true);
-                        } else {
-                            frameActuelle = animMarcheGauche.getKeyFrame(stateTime, true);
+                    case LEFT:
+                        if(isThisPlayer(p)){
+                            if (p.getInvin()) {
+                                frameActuelle = animMarcheGaucheInvin.getKeyFrame(stateTime, true);
+                            } else {
+                                frameActuelle = animMarcheGauche.getKeyFrame(stateTime, true);
+                            }
+                        }else{
+                            //ici
                         }
                         break;
                         
-                    case UP: 
-                        frameActuelle = imageDosEchelle; 
+                    case UP:
+                        if(isThisPlayer(p)){
+                            frameActuelle = imageDosEchelle; 
+                        }else{
+                            //ici
+                        }
                         break;
                         
                     case DOWN:
-                        if (typeCaseActuelle == 2) {
-                            frameActuelle = imageDosEchelle;
-                        } else {
-                            if (p.getInvin()) {
-                                frameActuelle = animChuteInvin.getKeyFrame(stateTime, true);
+                        if(isThisPlayer(p)){
+                            if (typeCaseActuelle == 2) {
+                                frameActuelle = imageDosEchelle;
                             } else {
-                                frameActuelle = imageChute; 
-                            }
+                                if (p.getInvin()) {
+                                    frameActuelle = animChuteInvin.getKeyFrame(stateTime, true);
+                                } else {
+                                    frameActuelle = imageChute; 
+                                }
+                            }                        
+                        }else{
+                            //ici
                         }
                         break;
                         
@@ -280,7 +301,7 @@ public class Main extends ApplicationAdapter {
         }
     }
 
-    public void inputPlayer(int ind){
+    public void inputPlayer(){
         if(Gdx.input.isKeyJustPressed(Input.Keys.ALT_RIGHT)){
             client.action("SAVE");
         }

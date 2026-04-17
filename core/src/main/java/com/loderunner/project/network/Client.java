@@ -11,6 +11,7 @@ public class Client {
     private ObjectInputStream in;
     private volatile Game g;
     private String score;
+    private String name;
 
     public Client(String host,int port) throws IOException {
         socket = new Socket(host, port);
@@ -27,6 +28,10 @@ public class Client {
         return this.score;
     }
 
+    public String getName(){
+        return this.name;
+    }
+
     public void listen(){
         new Thread(() -> {
             try{
@@ -35,7 +40,14 @@ public class Client {
                     if(obj instanceof Game){
                         g = (Game) obj;
                     }else{
-                        this.score = (String) obj;
+                        if(obj instanceof String){
+                            String msg = (String) obj;
+                            if(msg.startsWith("GAME") || msg.startsWith("ERREUR")){
+                                this.score = msg;
+                            }else{
+                                this.name = msg;
+                            }
+                        }
                     }
                 }
             }catch (Exception e){

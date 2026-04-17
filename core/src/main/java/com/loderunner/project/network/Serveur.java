@@ -56,11 +56,11 @@ public class Serveur {
                         clients.add(client);
                         client.start();
                     }else{
-                        Player p = new Player(g.getMaze().getExit(), 1);
+                        Player p = new Player(g.getMaze().getExit(), 1, "Player " + this.clients.size());
                         this.g.addPlayer(p);
-                        ClientHandler client = new ClientHandler(this, p, soc, "Player " + this.clients.size());
+                        ClientHandler client = new ClientHandler(this, p, soc, p.getName());
                         clients.add(client);
-                        DatabaseGame.addPlayerToGame(this.g.getId(), client.getNames());
+                        DatabaseGame.addPlayerToGame(this.g.getId(), p.getName());
                         client.start();
                     }
                     System.out.println("Client connecté");
@@ -168,7 +168,7 @@ public class Serveur {
                     this.clients.get(i).setCharacter(gameLoad.getPlay().get(0));
                     gameLoad.getPlay().remove(0);
                 }else{
-                    this.clients.get(i).setCharacter(new Player(gameLoad.getMaze().getExit(), 1));
+                    this.clients.get(i).setCharacter(new Player(gameLoad.getMaze().getExit(), 1, "Player" + this.clients.size()));
                 }
             }else{
                 if(0 != gameLoad.getEne().size()){
@@ -240,7 +240,7 @@ public class Serveur {
             this.g = new Game(5, 0, this.lvl, m);
             this.g.setId(id);
             for(ClientHandler ch : clients){
-                DatabaseGame.addPlayerToGame(this.g.getId(), ch.getNames());
+                DatabaseGame.addPlayerToGame(this.g.getId(), ch.getNameOfPlayer());
             }
             refreshCharacter();
             respawnAllCharacter(1);

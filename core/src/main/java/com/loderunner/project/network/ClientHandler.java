@@ -26,10 +26,10 @@ public class ClientHandler extends Thread{
         in = new ObjectInputStream(s.getInputStream());
     }
 
-    public String getNames(){
+    public String getNameOfPlayer(){
         return this.name;
     }
-
+    
     public Character getCharacter(){
         return this.c;
     }
@@ -57,6 +57,9 @@ public class ClientHandler extends Thread{
                             score = "Game Over";
                         }
                         sendMessage(score);
+                        break;
+                    case "GET_NAME":
+                        sendMessage(name);
                         break;
                     default:
                         serv.moveCharacter(c, action);

@@ -4,10 +4,12 @@ public class Player extends Character{
     private int hp ;
     private boolean invincible;
     private int timeInv;
+    private String name;
 
-    public Player(int x, int y){
+    public Player(int x, int y, String name){
         super(x, y);
         this.hp = 5;
+        this.name = name;
     }
 
     public int getHp(){
@@ -15,6 +17,10 @@ public class Player extends Character{
     }
     public void setHp(int h){
         this.hp=h;
+    }
+
+    public String getName(){
+        return this.name;
     }
 
     public boolean getInvin(){

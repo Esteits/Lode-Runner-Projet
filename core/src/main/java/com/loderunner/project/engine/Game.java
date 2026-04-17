@@ -464,7 +464,7 @@ public class Game implements Serializable{
             b.write("Play");
             b.newLine();
             for (Player p: play){
-                b.write(p.getX() + " " + p.getY() + " " + p.getHp());
+                b.write(p.getX() + " " + p.getY() + " " + p.getHp() + " " + p.getName());
                 b.newLine();
             }
 
@@ -543,7 +543,7 @@ public class Game implements Serializable{
             String line = b.readLine();
             while(!line.contentEquals("Ene")){
                 String[] caractereP = line.split(" ");
-                Player p = new Player(Integer.parseInt(caractereP[0]), Integer.parseInt(caractereP[1]));
+                Player p = new Player(Integer.parseInt(caractereP[0]), Integer.parseInt(caractereP[1]), caractereP[3]);
                 p.setHp(Integer.parseInt(caractereP[2]));
                 g.addPlayer(p);
                 line = b.readLine();
