@@ -50,11 +50,9 @@ public class Main extends ApplicationAdapter {
     // partie en ligne
     private Animation<TextureRegion> animMarcheDroiteRed;
     private Animation<TextureRegion> animMarcheGaucheRed;
-    private Animation<TextureRegion> animIdleRed;
     private Animation<TextureRegion> animMarcheDroiteInvinRed;
     private Animation<TextureRegion> animMarcheGaucheInvinRed;
     private Animation<TextureRegion> animChuteInvinRed;
-    private Animation<TextureRegion> animBackRed;
     private Animation<TextureRegion> animBackInvinRed;
     
     private TextureRegion imageChute; 
@@ -237,10 +235,7 @@ public class Main extends ApplicationAdapter {
     }
 
     public Boolean isThisPlayer(Player p){
-        if(p.getName().equals(client.getName())){
-            return true;
-        }
-        return false;
+        return p.getName().equals(client.getName());
     }
 
     public void drawPlayer(int width, int height, int tileWidth, int tileHeight){
@@ -366,7 +361,7 @@ public class Main extends ApplicationAdapter {
             client.action("SAVE");
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.ALT_LEFT)){
-            client.action("LOAD");;
+            client.action("LOAD");
         }
         if(!g.allPlayerDead()){
             if(Gdx.input.isKeyPressed(Input.Keys.D)){
@@ -403,6 +398,7 @@ public class Main extends ApplicationAdapter {
         }else{
             if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)){
                 client.action("RESTART");
+                client.action("GET_NAME");
             }
         }
     }

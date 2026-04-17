@@ -241,7 +241,7 @@ public class Game implements Serializable{
             if(maze.getTile(c.getX(), c.getY()).getType()==1 && maze.getTile(c.getX(), c.getY()).getState()==false && e.getFree()){
                 this.score += 10;
                 e.setFree(false);
-                e.setTimeToRespawn(60);
+                e.setTimeToRespawn(100);
                 return;
             }
         }

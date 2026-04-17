@@ -22,6 +22,9 @@ public class Player extends Character{
     public String getName(){
         return this.name;
     }
+    public void setName(String name){
+        this.name = name;
+    }
 
     public boolean getInvin(){
         return this.invincible;

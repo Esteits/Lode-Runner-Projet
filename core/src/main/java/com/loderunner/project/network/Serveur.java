@@ -23,6 +23,7 @@ public class Serveur {
     private int tick;
     private int lvl = 1;
     private int id;
+    private int nbrPlayer = 0;
 
     Serveur(Game g, int p){
         this.g = g;
@@ -56,7 +57,8 @@ public class Serveur {
                         clients.add(client);
                         client.start();
                     }else{
-                        Player p = new Player(g.getMaze().getExit(), 1, "Player " + this.clients.size());
+                        Player p = new Player(g.getMaze().getExit(), 1, "Player " + this.nbrPlayer);
+                        nbrPlayer++;
                         this.g.addPlayer(p);
                         ClientHandler client = new ClientHandler(this, p, soc, p.getName());
                         clients.add(client);
@@ -165,10 +167,12 @@ public class Serveur {
         for (int i = 0 ;  i < this.clients.size() ; i++){
             if(this.clients.get(i).getCharacter() instanceof Player){
                 if(0 != gameLoad.getPlay().size()){
-                    this.clients.get(i).setCharacter(gameLoad.getPlay().get(0));
-                    gameLoad.getPlay().remove(0);
+                    Player p = gameLoad.getPlay().remove(0);
+                    p.setName(this.clients.get(i).getNameOfPlayer());
+                    this.clients.get(i).setCharacter(p);
                 }else{
-                    this.clients.get(i).setCharacter(new Player(gameLoad.getMaze().getExit(), 1, "Player" + this.clients.size()));
+                    this.clients.get(i).setCharacter(new Player(gameLoad.getMaze().getExit(), 1, "Player" + this.nbrPlayer));
+                    nbrPlayer++;
                 }
             }else{
                 if(0 != gameLoad.getEne().size()){

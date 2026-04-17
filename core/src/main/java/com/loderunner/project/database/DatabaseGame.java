@@ -62,7 +62,7 @@ public class DatabaseGame {
                 stmt.setString(1, mode);
                 ResultSet rs = stmt.executeQuery();
                 int lastId = -1;
-                String response = "";
+                String response = "Score : \n";
                 while(rs.next()){
                     int idGame = rs.getInt("id");
                     if(idGame != lastId){

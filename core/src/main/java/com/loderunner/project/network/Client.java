@@ -17,6 +17,7 @@ public class Client {
         socket = new Socket(host, port);
         out = new ObjectOutputStream(socket.getOutputStream());
         in = new ObjectInputStream(socket.getInputStream());
+        this.action("GET_NAME");
         listen();
     }
    
@@ -42,7 +43,7 @@ public class Client {
                     }else{
                         if(obj instanceof String){
                             String msg = (String) obj;
-                            if(msg.startsWith("GAME") || msg.startsWith("ERREUR")){
+                            if(msg.startsWith("Score : \n") || msg.startsWith("ERREUR")){
                                 this.score = msg;
                             }else{
                                 this.name = msg;
