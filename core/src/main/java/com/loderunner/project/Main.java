@@ -43,6 +43,9 @@ public class Main extends ApplicationAdapter {
     private Animation<TextureRegion> animEnemyGauche;
     private Animation<TextureRegion> animHeart;
     private Animation<TextureRegion> animTreasure; 
+    private Animation<TextureRegion> animMarcheDroiteInvin;
+    private Animation<TextureRegion> animMarcheGaucheInvin;
+    private Animation<TextureRegion> animChuteInvin;
     
     private TextureRegion imageChute; 
     private TextureRegion imageDosEchelle;
@@ -74,6 +77,9 @@ public class Main extends ApplicationAdapter {
         animMarcheGauche = creerAnimation("PlayerRunLeft.png", 6, 32, 32);
         animIdle = creerAnimation("PlayerWait.png", 9, 32, 32);
         animTreasure = creerAnimation("treasure.png", 7, 32, 32);
+        animMarcheDroiteInvin = creerAnimation("PlayerRunRightInvincible.png", 6, 32, 32);
+        animMarcheGaucheInvin = creerAnimation("PlayerRunLeftInvincible.png", 6, 32, 32);
+        animChuteInvin = creerAnimation("PlayerFallInvincible.png", 5, 32, 32);
         
         Texture sheetChute = new Texture(Gdx.files.internal("PlayerFall.png"));
         imageChute = new TextureRegion(sheetChute, 32, 32);
@@ -84,12 +90,12 @@ public class Main extends ApplicationAdapter {
         tick = 0;
         tickDep = 0;
         try {
-        client = new Client("192.168.1.180",8080);
+            client = new Client("localhost", 8080);
         } catch (IOException e) {
             e.printStackTrace();
             client = null;
+            }
         }
-    }
 
     @Override
     public void resize(int width, int height){
@@ -208,15 +214,43 @@ public class Main extends ApplicationAdapter {
             if(!p.playerDead()){
                 TextureRegion frameActuelle;
                 int typeCaseActuelle = g.getMaze().getTile(p.getX(), p.getY()).getType();
+                
                 switch (p.getDirection()) {
-                    case RIGHT: frameActuelle = animMarcheDroite.getKeyFrame(stateTime, true); break;
-                    case LEFT: frameActuelle = animMarcheGauche.getKeyFrame(stateTime, true); break;
-                    case UP: frameActuelle = imageDosEchelle; break;
-                    case DOWN:
-                        if (typeCaseActuelle == 2) frameActuelle = imageDosEchelle;
-                        else frameActuelle = imageChute;
+                    case RIGHT: 
+                        if (p.getInvin()) {
+                            frameActuelle = animMarcheDroiteInvin.getKeyFrame(stateTime, true);
+                        } else {
+                            frameActuelle = animMarcheDroite.getKeyFrame(stateTime, true);
+                        }
                         break;
-                    case NONE: default: frameActuelle = animIdle.getKeyFrame(stateTime, true); break;
+                        
+                    case LEFT: 
+                        if (p.getInvin()) {
+                            frameActuelle = animMarcheGaucheInvin.getKeyFrame(stateTime, true);
+                        } else {
+                            frameActuelle = animMarcheGauche.getKeyFrame(stateTime, true);
+                        }
+                        break;
+                        
+                    case UP: 
+                        frameActuelle = imageDosEchelle; 
+                        break;
+                        
+                    case DOWN:
+                        if (typeCaseActuelle == 2) {
+                            frameActuelle = imageDosEchelle;
+                        } else {
+                            if (p.getInvin()) {
+                                frameActuelle = animChuteInvin.getKeyFrame(stateTime, true);
+                            } else {
+                                frameActuelle = imageChute; 
+                            }
+                        }
+                        break;
+                        
+                    case NONE: default: 
+                        frameActuelle = animIdle.getKeyFrame(stateTime, true); 
+                        break;
                 }
                 batch.draw(frameActuelle, p.getX() * tileWidth, (height - 1 - p.getY()) * tileHeight, tileWidth, tileHeight);
             }

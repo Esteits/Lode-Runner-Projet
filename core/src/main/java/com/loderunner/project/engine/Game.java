@@ -207,7 +207,7 @@ public class Game implements Serializable{
             if(maze.getTile(c.getX(), c.getY()).getType()==1 && maze.getTile(c.getX(), c.getY()).getState()==false && e.getFree()){
                 this.score += 10;
                 e.setFree(false);
-                e.setTimeToRespawn(10);
+                e.setTimeToRespawn(60);
                 return;
             }
         }
@@ -303,8 +303,13 @@ public class Game implements Serializable{
 
         for(Enemy e : ene){
             if (e.getX()==x && e.getY()==y){
-                e.setFree(true);
-                e.respawn(maze.getExit(), 0);
+                e.setFree(true); 
+                
+                if (e instanceof EnemyPatrouilleur) {
+                    e.respawn(x, y - 1); 
+                } else {
+                    e.respawn(maze.getExit(), 0);
+                }
             }
         }
     }
