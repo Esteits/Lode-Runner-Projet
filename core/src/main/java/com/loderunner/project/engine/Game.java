@@ -56,15 +56,19 @@ public class Game implements Serializable{
         this.ene = new ArrayList<>();
         this.tre = new ArrayList<>();
         this.modeJeu = mJeu;
-        int i = 1;
+        int i = 2;
+        int j = 3;
         this.lvl = lvl;
+        if(this.lvl > 5){
+            j = 2;
+        }
         while(this.ene.size() < lvl){
-            switch (i % 3) {
-                case 1:
+            switch (i % j) {
+                case 2:
                     EnemyNormal en = new EnemyNormal(this.maze.getExit(), 1);
                     this.ene.add(en);
                     break;
-                case 2:
+                case 0:
                     EnemyPatrouilleur ep = new EnemyPatrouilleur((int)(Math.random() * (this.maze.getWidth() - 1)) , (int)(Math.random() * (this.maze.getHeight() - 1)));
                     while(ep.getY() <= 1 || ep.getX() < 1 || (this.maze.getTile(ep.getX(), ep.getY() - 1).getType() != 1 && this.maze.getTile(ep.getX(), ep.getY() - 1).getType() != 3)){
                         ep.setX((int)(Math.random() * (this.maze.getWidth() - 1)));
@@ -72,7 +76,7 @@ public class Game implements Serializable{
                     }
                     this.ene.add(ep);
                     break;
-                case 0:
+                case 1:
                     EnemyIA eIA = new EnemyIA(this.maze.getExit(), 1);
                     this.ene.add(eIA);
                     break;
@@ -225,7 +229,7 @@ public class Game implements Serializable{
         Tiles tile = maze.getTile(digX, digY);
         if(tile.getType()==1 && digX != maze.getWidth()-1 && digX != 0){
             tile.setState(false);
-            tile.setRespawn(65);
+            tile.setRespawn(50);
         }
     }
 
@@ -370,7 +374,7 @@ public class Game implements Serializable{
                             p.loseHp();
                             if(!p.playerDead()){
                                 p.setInvin(true);
-                                p.setTimeInve(10);
+                                p.setTimeInve(5);
                                 p.respawn(maze.getExit(), 1);
                             }
                         }

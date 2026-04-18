@@ -41,7 +41,7 @@ public class Serveur {
     }
     public static void main(String[] args) throws Exception{
         DatabaseManager.init();
-        Game g = new Game(5, 0, 1, Game.Mode.COOP);
+        Game g = new Game(5, 0, 1, Game.Mode.VERSUS);
         Serveur serv = new Serveur(g, 8080);
         serv.start();
     }
@@ -53,7 +53,7 @@ public class Serveur {
     public void start() throws Exception{
         ServerSocket s = new ServerSocket(port);
         System.out.println("Serveur lancer");
-        Game.Mode mode = Game.Mode.COOP;
+        Game.Mode mode = this.g.getMode();
         this.id = DatabaseGame.createGame(mode.toString());
         this.g.setId(this.id);
         new Thread(()->{

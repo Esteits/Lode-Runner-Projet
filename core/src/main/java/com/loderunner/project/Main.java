@@ -23,6 +23,7 @@ import com.loderunner.project.network.Client;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /**
  * Classe principale du jeu LodeRunner.
@@ -33,12 +34,14 @@ public class Main extends ApplicationAdapter {
     private Game g ;
     private Client client;
     private SpriteBatch batch;
-
+    boolean oneTimeScore = false;
+    
     private Texture bedrock;
     private Texture ladder;
     private Texture background;
     private Texture wallbreak;
     private Texture wall;
+    private ShapeRenderer sr;
 
     private Animation<TextureRegion> animMarcheDroite;
     private Animation<TextureRegion> animMarcheGauche;
@@ -78,7 +81,7 @@ public class Main extends ApplicationAdapter {
         scoreText = new BitmapFont();
         gameOver = new BitmapFont();
         batch = new SpriteBatch();
-        
+        sr = new ShapeRenderer();
         ladder = new Texture("ladder.png");
         wall = new Texture("wall.png");
         bedrock = new Texture("bedrock.png");
@@ -229,12 +232,20 @@ public class Main extends ApplicationAdapter {
     }
 
     public void drawHeart(int widthScreen, int heightScreen, int tileWidth, int tileHeight){
-        int j = 0;
+        int j = 1;
         TextureRegion frameActuelle = animHeart.getKeyFrame(stateTime, true);
         for(Player p: g.getPlay()){
-            j += 1;
-            for(int i = 1 ; i <= p.getHp() ; i++) {
-                batch.draw(frameActuelle, widthScreen - tileWidth * i, heightScreen - tileHeight * j, tileWidth, tileHeight);
+            if(isThisPlayer(p)){
+                for(int i = 1 ; i <= p.getHp() ; i++) {
+                    batch.draw(frameActuelle, widthScreen - tileWidth * i, heightScreen - tileHeight * j, tileWidth, tileHeight);
+                }
+            }else{
+                if(client.getName().startsWith("Enemy")){
+                    for(int i = 1 ; i <= p.getHp() ; i++) {
+                        batch.draw(frameActuelle, widthScreen - tileWidth * i, heightScreen - tileHeight * j, tileWidth, tileHeight);
+                    }
+                    j += 1;
+                }
             }
         }
     }
@@ -317,7 +328,7 @@ public class Main extends ApplicationAdapter {
                                 if(p.getInvin()){
                                     frameActuelle = animBackInvinRed.getKeyFrame(stateTime, true);
                                 }else{
-                                    frameActuelle = animBackInvinRed.getKeyFrame(stateTime, true);
+                                    frameActuelle = imageDosEchelleRed;
                                     }
                             } else {
                                 if (p.getInvin()) {
@@ -416,6 +427,13 @@ public class Main extends ApplicationAdapter {
     
     public void lose(){
         if(g.gameOver()){
+            if(!oneTimeScore){
+                sr.begin(ShapeRenderer.ShapeType.Filled);
+                sr.setColor(Color.BLACK);
+                sr.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+                sr.end();
+                oneTimeScore = true;
+            }
             gameOver.getData().setScale(2);
             client.action("GET_SCORE");
             String score = client.getScore();
