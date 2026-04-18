@@ -374,7 +374,7 @@ public class Game implements Serializable{
                             p.loseHp();
                             if(!p.playerDead()){
                                 p.setInvin(true);
-                                p.setTimeInve(5);
+                                p.setTimeInve(10);
                                 p.respawn(maze.getExit(), 1);
                             }
                         }

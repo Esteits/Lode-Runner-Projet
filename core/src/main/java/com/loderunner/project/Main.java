@@ -23,7 +23,6 @@ import com.loderunner.project.network.Client;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 /**
  * Classe principale du jeu LodeRunner.
@@ -34,14 +33,12 @@ public class Main extends ApplicationAdapter {
     private Game g ;
     private Client client;
     private SpriteBatch batch;
-    boolean oneTimeScore = false;
     
     private Texture bedrock;
     private Texture ladder;
     private Texture background;
     private Texture wallbreak;
     private Texture wall;
-    private ShapeRenderer sr;
 
     private Animation<TextureRegion> animMarcheDroite;
     private Animation<TextureRegion> animMarcheGauche;
@@ -81,7 +78,6 @@ public class Main extends ApplicationAdapter {
         scoreText = new BitmapFont();
         gameOver = new BitmapFont();
         batch = new SpriteBatch();
-        sr = new ShapeRenderer();
         ladder = new Texture("ladder.png");
         wall = new Texture("wall.png");
         bedrock = new Texture("bedrock.png");
@@ -176,14 +172,16 @@ public class Main extends ApplicationAdapter {
 
         batch.begin();
 
-        drawMaze(width, height, tileWidth, tileHeight);
-        drawHeart(widthScreen, heightScreen, tileWidth, tileHeight);
-        drawPlayer(width, height, tileWidth, tileHeight);
-        drawTreasure(width, height, tileWidth, tileHeight);
-        drawEnemy(width, height, tileWidth, tileHeight);
-        score();
-        lose();
-
+        if(!g.gameOver()){
+            drawMaze(width, height, tileWidth, tileHeight);
+            drawHeart(widthScreen, heightScreen, tileWidth, tileHeight);
+            drawPlayer(width, height, tileWidth, tileHeight);
+            drawTreasure(width, height, tileWidth, tileHeight);
+            drawEnemy(width, height, tileWidth, tileHeight);
+            score();
+        }else{
+            lose();
+        }
         batch.end();
 
         inputPlayer();
@@ -426,26 +424,17 @@ public class Main extends ApplicationAdapter {
     }
     
     public void lose(){
-        if(g.gameOver()){
-            if(!oneTimeScore){
-                sr.begin(ShapeRenderer.ShapeType.Filled);
-                sr.setColor(Color.BLACK);
-                sr.rect(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-                sr.end();
-                oneTimeScore = true;
-            }
-            gameOver.getData().setScale(2);
-            client.action("GET_SCORE");
-            String score = client.getScore();
-            if(score == null){
-                score = "gameOver";
-            }
-            GlyphLayout layout = new GlyphLayout(gameOver, score);
-            float x = (Gdx.graphics.getWidth() - layout.width) / 2;
-            float y = (Gdx.graphics.getHeight() + layout.height) / 2;
-            gameOver.setColor(Color.RED);
-            gameOver.draw(batch, layout, x, y);
+        gameOver.getData().setScale(2);
+        client.action("GET_SCORE");
+        String score = client.getScore();
+        if(score == null){
+            score = "gameOver";
         }
+        GlyphLayout layout = new GlyphLayout(gameOver, score);
+        float x = (Gdx.graphics.getWidth() - layout.width) / 2;
+        float y = (Gdx.graphics.getHeight() + layout.height) / 2;
+        gameOver.setColor(Color.WHITE);
+        gameOver.draw(batch, layout, x, y);
     }
     
     private Animation<TextureRegion> creerAnimation(String nomFichier, int nbFrames, int frameWidth, int frameHeight) {
