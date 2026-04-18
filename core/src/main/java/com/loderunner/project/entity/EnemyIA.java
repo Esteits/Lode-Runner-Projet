@@ -5,6 +5,13 @@ import java.util.Queue;
 
 import com.loderunner.project.engine.Game;
 
+/**
+ * Ennemi avec intelligence artificielle.
+ * 
+ * Utilise un algorithme de recherche en largeur (BFS)
+ * pour trouver le chemin le plus court vers le joueur.
+ */
+
 public class EnemyIA extends Enemy{
 
     private int tick;
@@ -21,6 +28,14 @@ public class EnemyIA extends Enemy{
         this.setState(state);
         this.setTimeToRespawn(time);
     }
+
+    /**
+     * Détermine le mouvement de l'ennemi.
+     * 
+     * - ralentit les déplacements avec un tick
+     * - cible le joueur le plus proche
+     * - utilise un BFS pour trouver le chemin optimal
+     */
 
     @Override
     public Direction mouvement(Game game) {

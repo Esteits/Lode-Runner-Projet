@@ -5,6 +5,15 @@ import java.net.*;
 
 import com.loderunner.project.engine.Game;
 
+/**
+ * Client du jeu LodeRunner.
+ * 
+ * Gère :
+ * - la connexion au serveur
+ * - l'envoi des actions
+ * - la réception des données (jeu, score, nom)
+ */
+
 public class Client {
     private Socket socket;
     private ObjectOutputStream out;
@@ -33,6 +42,14 @@ public class Client {
         return this.name;
     }
 
+    /**
+     * Lance un thread qui écoute en continu les messages du serveur.
+     * 
+     * Met à jour :
+     * - le jeu
+     * - le score
+     * - le nom du joueur
+     */
     public void listen(){
         new Thread(() -> {
             try{

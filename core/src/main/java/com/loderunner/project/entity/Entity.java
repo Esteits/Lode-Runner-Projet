@@ -1,6 +1,13 @@
 package com.loderunner.project.entity;
 import java.io.Serializable;
 
+/**
+ * Classe de base représentant une entité dans le jeu.
+ * 
+ * Une entité possède une position (x, y) dans la grille.
+ * Elle est sérialisable pour être envoyée.
+ */
+
 public class Entity implements Serializable {
     protected int x;
     protected int y;

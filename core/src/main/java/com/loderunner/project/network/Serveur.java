@@ -15,6 +15,16 @@ import com.loderunner.project.entity.Player;
 import com.loderunner.project.database.DatabaseManager;
 import com.loderunner.project.database.DatabaseGame;
 
+/**
+ * Serveur du jeu LodeRunner.
+ * 
+ * Gère :
+ * - la connexion des clients
+ * - la boucle de jeu (game loop)
+ * - la synchronisation des joueurs
+ * - la gestion des niveaux et des scores
+ */
+
 public class Serveur {
     private int port;
     private Game g;
@@ -95,7 +105,7 @@ public class Serveur {
                     if(g.allPlayerDead()){
                         DatabaseGame.refreshScore(this.id, g.getScore());
                     }
-                    avancedToNextLevel();
+                    avanceToNextLevel();
                 }
                 
             }
@@ -107,6 +117,12 @@ public class Serveur {
         }
     }
 
+    /**
+     * Supprime un client du serveur et enlève son personnage du jeu.
+     *
+     * @param ch client à supprimer
+     */
+
     public synchronized void removeClient(ClientHandler ch){
         clients.remove(ch);
         if(ch.getCharacter() instanceof Player){
@@ -115,6 +131,7 @@ public class Serveur {
             g.getEne().remove(ch.getCharacter());
         }
     }
+
     public void moveCharacter(Character c, String action){
         switch (action) {
             case "RIGHT":
@@ -143,7 +160,7 @@ public class Serveur {
         }
     }
 
-    public void avancedToNextLevel(){
+    public void avanceToNextLevel(){
         if(g.win()){
             int sco = g.getScore() + 1000;
             this.lvl++;
@@ -192,6 +209,9 @@ public class Serveur {
         }
     }
 
+    /**
+    * Ajoute tous les personnages des clients dans une liste temporaire.
+    */
     public void addAllCharacter(){
         this.chara.clear();
         for(ClientHandler ch : clients) {
@@ -199,6 +219,9 @@ public class Serveur {
         }
     } 
 
+    /**
+    * Synchronise les personnages avec l'état du jeu.
+    */
     public void refreshCharacter(){
         for(int i = this.g.getEne().size() - 1 ; i >= 0 ; i--){
             Enemy e = this.g.getEne().get(i);
@@ -218,7 +241,13 @@ public class Serveur {
         }
     }
 
-    public void respawnAllCharacter(int a){ // a = 1 == restart
+    /**
+     * Réinitialise la position des personnages.
+     *
+     * @param a 1 si redémarrage complet, sinon respawn simple
+     */
+
+    public void respawnAllCharacter(int a){
         for(ClientHandler ch : clients){
             ch.getCharacter().respawn(g.getMaze().getExit(), 1);
             if(ch.getCharacter() instanceof Player){

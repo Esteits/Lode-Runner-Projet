@@ -1,5 +1,14 @@
 package com.loderunner.project.entity;
 
+/**
+ * Classe abstraite représentant un personnage du jeu.
+ * 
+ * Regroupe les comportements communs aux entités mobiles :
+ * - position (héritée de Entity)
+ * - direction de déplacement
+ * - déplacements basiques
+ */
+
 public abstract class Character extends Entity{
     protected Direction dir;
 

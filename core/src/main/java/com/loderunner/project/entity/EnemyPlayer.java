@@ -2,6 +2,14 @@ package com.loderunner.project.entity;
 
 import com.loderunner.project.engine.Game;
 
+/**
+ * Représente un ennemi contrôlé par un joueur.
+ * 
+ * Contrairement à un Enemy classique, cet ennemi peut être :
+ * - créé à partir d’un autre Enemy (copie d’état)
+ * - utilisé pour synchronisation réseau ou mode versus
+ */
+
 public class EnemyPlayer extends Enemy{
     public EnemyPlayer(int x, int y){
         super(x, y);

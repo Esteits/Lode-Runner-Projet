@@ -1,5 +1,12 @@
 package com.loderunner.project.entity;
 
+/**
+ * Représente un trésor dans le jeu.
+ * 
+ * Un trésor possède :
+ * - une position (héritée de Entity)
+ * - un état indiquant s'il a été collecté
+ */
 public class Treasure extends Entity{
     private boolean collect;
 

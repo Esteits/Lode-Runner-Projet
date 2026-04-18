@@ -2,6 +2,11 @@ package com.loderunner.project.database;
 
 import java.sql.*;
 
+/**
+ * Gestion des opérations liées aux joueurs dans la base de données.
+ * Permet l'ajout d'un joueur et la récupération de son identifiant.
+ */
+
 public class DatabaseManager {
     private static final String URL = "jdbc:sqlite:game.db";
 

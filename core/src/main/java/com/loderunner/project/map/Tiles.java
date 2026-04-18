@@ -1,8 +1,18 @@
 package com.loderunner.project.map;
 import java.io.Serializable;
 
+/**
+ * Représente une tuile de la carte du jeu.
+ * 
+ * Une tuile possède :
+ * - un type (mur, échelle, vide, etc.)
+ * - une position (x, y)
+ * - un état (visible ou non)
+ * - un temps de respawn
+ */
+
 public class Tiles implements Serializable{
-    private int type;
+    private int type; // 0 = vide 1 = mur 2 = echelle 3 = bedrock
     private int x;
     private int y;
     private boolean state; //true =  visible false = invisible

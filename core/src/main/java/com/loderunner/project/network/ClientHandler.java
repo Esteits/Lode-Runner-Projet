@@ -9,6 +9,18 @@ import com.loderunner.project.database.DatabaseGame;
 import com.loderunner.project.engine.Game;
 import com.loderunner.project.entity.Character;
 
+/**
+ * Gère la communication avec un client connecté.
+ * 
+ * Chaque instance de ClientHandler correspond à un joueur
+ * et s'exécute dans un thread séparé.
+ * 
+ * Responsabilités :
+ * - recevoir les actions du client
+ * - les transmettre au serveur
+ * - envoyer les mises à jour du jeu
+ */
+
 public class ClientHandler extends Thread{
     private String name;
     private Serveur serv;
@@ -37,6 +49,17 @@ public class ClientHandler extends Thread{
         this.c = c;
     }
     
+    /**
+     * Gère la communication avec un client connecté.
+     * 
+     * Chaque instance de ClientHandler correspond à un joueur
+     * et s'exécute dans un thread séparé.
+     * 
+     * Responsabilités :
+     * - recevoir les actions du client
+     * - les transmettre au serveur
+     * - envoyer les mises à jour du jeu
+     */
     public void run(){
         try{
             while(true){

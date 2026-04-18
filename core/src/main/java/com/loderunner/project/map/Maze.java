@@ -1,6 +1,16 @@
 package com.loderunner.project.map;
 import java.io.Serializable;
 
+/**
+ * Représente le labyrinthe du jeu.
+ * 
+ * Contient :
+ * - une grille de tuiles
+ * - les dimensions
+ * - la position de la sortie
+ * - l'état d'ouverture de la sortie
+ */
+
 public class Maze implements Serializable{
     private int width;
     private int height;
@@ -15,7 +25,7 @@ public class Maze implements Serializable{
         map = new Tiles[height][width];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                map[i][j] = new Tiles(0, j, i);  // type 0 = vide, type 1 = mur, type 2 = echelles type 3 = brique incassable 
+                map[i][j] = new Tiles(0, j, i); // Initialisation de la grille avec des tuiles vides (type 0)
             }
         }
     }
@@ -39,6 +49,9 @@ public class Maze implements Serializable{
         this.exit=a;
     }
             
+    /**
+ * @return true si la sortie est accessible
+    */
     public boolean getCanEscape(){
         return this.escapeOpen;
     }
@@ -46,6 +59,9 @@ public class Maze implements Serializable{
         this.escapeOpen=escape;
     }
 
+    /**
+    * Crée des bordures incassable autour du labyrinthe.
+    */
     public void bord(){
         for (int x = 0 ; x < this.getWidth() ; x++){
             getTile(x, 0).setType(3);
@@ -57,6 +73,14 @@ public class Maze implements Serializable{
         }
     }
     
+    /**
+     * Crée une plateforme horizontale de blocs destructibles.
+     *
+     * @param x position centrale
+     * @param y hauteur
+     * @param lon longueur de la plateforme
+     * @return bornes gauche et droite de la plateforme
+     */
     public int[] plat(int x,int y,int lon){
         int right = x;
         int left = x ;
@@ -81,6 +105,13 @@ public class Maze implements Serializable{
         return new int[]{left,right};
     }
 
+    /**
+     * Crée une échelle verticale à partir d'une position donnée
+     * jusqu'à rencontrer un obstacle.
+     *
+     * @param x position X
+     * @param y position Y de départ
+     */
     public void ladder(int x, int y){
         this.getTile(x, y).setType(2);
         y+=1;
@@ -90,6 +121,11 @@ public class Maze implements Serializable{
         }
     }
 
+    /**
+     * Génère un labyrinthe aléatoire.
+     *
+     * @return nouveau labyrinthe généré
+     */
     public static Maze generation(){
         int size = (int)(Math.random()*10)+20;
         Maze mazegenerator = new Maze(size, size, 0);

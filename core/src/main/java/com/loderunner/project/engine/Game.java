@@ -21,6 +21,10 @@ import com.loderunner.project.entity.Treasure;
 import com.loderunner.project.map.Maze;
 import com.loderunner.project.map.Tiles;
 
+/**
+ * Classe principale du jeu.
+ * Gère la logique globale : joueurs, ennemis, carte, collisions et score.
+ */
 
 public class Game implements Serializable{
     private int score;

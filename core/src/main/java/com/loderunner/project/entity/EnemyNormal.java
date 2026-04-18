@@ -3,6 +3,16 @@ package com.loderunner.project.entity;
 import com.loderunner.project.engine.Game;
 import com.loderunner.project.map.Tiles;
 
+/**
+ * Ennemi normal avec IA adaptative.
+ * 
+ * Comportement :
+ * - poursuit le joueur le plus proche
+ * - utilise les échelles pour changer de niveau
+ * - évite les obstacles et les trous
+ * - explore aléatoirement lorsqu'il cherche une échelle
+ */
+
 public class EnemyNormal extends Enemy {
 
     private Direction directionActuelle; 
@@ -26,6 +36,15 @@ public class EnemyNormal extends Enemy {
         this.enRechercheEchelle = false; 
     }
 
+    /**
+     * Détermine le mouvement de l'ennemi.
+     * 
+     * Logique :
+     * - ralentissement via tick
+     * - recherche du joueur le plus proche
+     * - comportement différent selon position relative
+     */
+    
     @Override
     public Direction mouvement(Game game) {
         this.tick += 3;

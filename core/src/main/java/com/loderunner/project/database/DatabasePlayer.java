@@ -2,6 +2,11 @@ package com.loderunner.project.database;
 
 import java.sql.*;
 
+/**
+ * Gestion des joueurs dans la base de données.
+ * Permet d'ajouter un joueur et de récupérer son identifiant.
+ */
+
 public class DatabasePlayer {
 
     public static void addPlayer(String name){

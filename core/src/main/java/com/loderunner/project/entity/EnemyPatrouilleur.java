@@ -4,6 +4,15 @@ package com.loderunner.project.entity;
 import com.loderunner.project.engine.Game;
 import com.loderunner.project.map.Tiles;
 
+/**
+ * Ennemi patrouilleur avec IA simple.
+ * 
+ * Comportement :
+ * - patrouille horizontalement
+ * - inverse direction en cas d'obstacle ou de vide
+ * - passe en mode poursuite si un joueur est aligné et visible
+ */
+
 public class EnemyPatrouilleur extends Enemy{
 
     public enum Etat { PATROUILLE, POURSUIT }
@@ -29,6 +38,14 @@ public class EnemyPatrouilleur extends Enemy{
         this.etat = Etat.PATROUILLE;
         this.directionActuelle = Direction.RIGHT;  
     }
+
+    /**
+     * Détermine le mouvement de l'ennemi.
+     * 
+     * - ralentit les déplacements avec un tick
+     * - poursuit un joueur si visible
+     * - sinon patrouille
+     */
 
     @Override
     public Direction mouvement(Game game) {   

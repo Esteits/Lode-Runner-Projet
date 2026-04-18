@@ -1,5 +1,15 @@
 package com.loderunner.project.entity;
 
+/**
+ * Représente un joueur dans le jeu.
+ * 
+ * Un joueur possède :
+ * - des points de vie (hp)
+ * - un état d'invincibilité temporaire
+ * - un nom
+ * - une position (héritée de Character)
+ */
+
 public class Player extends Character{
     private int hp ;
     private boolean invincible;

@@ -24,6 +24,11 @@ import com.loderunner.project.network.Client;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+/**
+ * Classe principale du jeu LodeRunner.
+ * Gère le rendu graphique, les entrées utilisateur et la communication réseau.
+ */
+
 public class Main extends ApplicationAdapter {
     private Game g ;
     private Client client;

@@ -2,6 +2,13 @@ package com.loderunner.project.entity;
 
 import com.loderunner.project.engine.Game;
 
+/**
+ * Classe abstraite représentant un ennemi dans le jeu.
+ * 
+ * Tous les types d'ennemis héritent de cette classe et doivent
+ * définir leur propre logique de mouvement.
+ */
+
 public abstract class Enemy extends Character{
     private boolean state; //true = joue false = desactiver
     private boolean free ;  //true = normal false = pieger
