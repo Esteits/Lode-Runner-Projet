@@ -41,7 +41,7 @@ public class Serveur {
     }
     public static void main(String[] args) throws Exception{
         DatabaseManager.init();
-        Game g = new Game(5, 0, 1, Game.Mode.COOP);
+        Game g = new Game(5, 0, 1, Game.Mode.VERSUS);
         Serveur serv = new Serveur(g, 8080);
         serv.start();
     }
@@ -251,11 +251,12 @@ public class Serveur {
         for(ClientHandler ch : clients){
             ch.getCharacter().respawn(g.getMaze().getExit(), 1);
             if(ch.getCharacter() instanceof Player){
+                Player p = (Player) ch.getCharacter();
+                p.setInvin(true);
+                p.setTimeInve(10);
                 if(a == 1){
-                    Player p = (Player) ch.getCharacter();
                     p.setHp(5);
                 }else{
-                    Player p = (Player) ch.getCharacter();
                     p.setHp(p.getHp() + 1);
                 }
             }

@@ -164,6 +164,9 @@ public class Main extends ApplicationAdapter {
         int height = g.getMaze().getHeight();
         int width = g.getMaze().getWidth();
 
+        // Calcule la taille d'une case en fonction de la résolution écran
+        // Permet d'adapter dynamiquement le rendu à n'importe quelle taille de fenêtre
+        
         int tileWidth = widthScreen / width;
         int tileHeight = heightScreen / height;
 

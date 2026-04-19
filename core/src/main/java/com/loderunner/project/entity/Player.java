@@ -20,6 +20,8 @@ public class Player extends Character{
         super(x, y);
         this.hp = 5;
         this.name = name;
+        this.timeInv = 10;
+        this.invincible = true;
     }
 
     public int getHp(){
