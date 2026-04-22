@@ -41,7 +41,7 @@ public class Serveur {
     }
     public static void main(String[] args) throws Exception{
         DatabaseManager.init();
-        Game g = new Game(5, 0, 1, Game.Mode.VERSUS);
+        Game g = new Game(5, 0, 1, Game.Mode.COOP);
         Serveur serv = new Serveur(g, 8080);
         serv.start();
     }

@@ -1,0 +1,12 @@
+Le code du projet se trouve dans le dossier :
+LodeRunner/core/src/main/java/com/loderunner/project
+
+Depuis le dossier LodeRunner, ouvrez un terminal et exécutez :
+Pour lancer un serveur en mode coopératif :
+java -jar serveur_coop
+Pour lancer un serveur en mode versus :
+java -jar serveur_versus
+
+Toujours depuis le dossier LodeRunner, exécutez :
+
+./gradlew lwjgl3:run
